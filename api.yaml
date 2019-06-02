@@ -22,32 +22,194 @@ info:
 servers:
   - url: 'http://localhost:8080'
 paths:
-  /benutzer:
+  /unterkuenfte:
     get:
-      security:
-        - basic authentication: []
       tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Gibt Benutzer zurück.
+        - Anwender
+      summary: Gibt Unterkünfte zurück.
       description: >-
-        Alle Benutzer werden zurückgegeben. Falls Query-Parameter mit Werten
-        angegeben wurden, werden diese Benutzer noch entsprechend gefiltert.
-        **Nur für Mitarbeiter.**
+        Alle Unterkünfte werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
       parameters:
+        - name: bezeichnung
+          in: query
+          description: 'Nur Unterkünfte, deren **Bezeichnung** `bezeichnung` enthalten, werden zurückgegeben.'
+          schema:
+            type: string
+        - name: sterne
+          in: query
+          description: 'Nur Unterkünfte, die eine Anzahl von `sterne` Hotelsternen haben, werden zurückgegeben.'
+          schema:
+            type: integer
+        - name: top
+          in: query
+          description: 'Hierbei werden die `top` am häufigsten gebuchten Unterkünfte absteigend ausgegeben.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        unterkunftid:
+                          type: integer
+                          description: '**RowID der Unterkunft**.'
+                      required:
+                        - reisebuero
+                    - $ref: '#/components/schemas/unterkunft'
+  /fluege:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt nicht ausgebuchte Flüge zurück.
+      description: >-
+        Alle Flüge, die nicht ausgebucht sind, werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: startzeitpunkt
+          in: query
+          description: 'Nur Flüge, die am Tag von `startzeitpunkt` starten.'
+          schema:
+            type: string
+        - name: startflughafen
+          in: query
+          description: 'Nur Flüge, die von `startflughafen` starten.'
+          schema:
+            type: string
+        - name: zielflughafen
+          in: query
+          description: 'Nur Flüge, die in `zielflughafen` landen.'
+          schema:
+            type: string
+        - name: flugzeugid
+          in: query
+          description: 'Nur Flüge mit dem Flugzeug `flugzeugid`.'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        flugid:
+                          type: integer
+                          description: '**RowID des Flugs**.'
+                      required:
+                        - reisebuero
+                    - $ref: '#/components/schemas/flug'
+  /flughaefen:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt Flughäfen zurück.
+      description: >-
+        Alle Flughäfen werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: bezeichnung
+          in: query
+          description: 'Nur Flughäfen, deren Bezeichnung `bezeichnung` enthält.'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        flughafenid:
+                          type: integer
+                          description: '**RowID des Flughafens**.'
+                      required:
+                        - reisebuero
+                    - $ref: '#/components/schemas/flughafen'
+  /flugzeuge:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt Flugzeuge zurück.
+      description: >-
+        Alle Flugzeuge werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: flugzeugid
+          in: query
+          description: 'Gibt nur das Flugzeug mit RowID `flugzeugid` zurück.'
+          schema:
+            type: string
+        - name: modell
+          in: query
+          description: 'Nur Flugzeuge, deren Modellname `modell` enthält.'
+          schema:
+            type: string
+        - name: baujahr
+          in: query
+          description: 'Nur Flugzeuge aus dem Baujahr `baujahr`.'
+          schema:
+            type: integer
+        - name: passagieranzahl
+          in: query
+          description: 'Nur Flugzeuge mit einer Passagierkapazität von mindestens `passagieranzahl`.'
+          schema:
+            type: integer
+        - name: crewanzahl
+          in: query
+          description: 'Nur Flugzeuge mit einer Crewkapazität von mindestens `crewanzahl`.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        flugzeugid:
+                          type: integer
+                          description: '**RowID des Flugzeugs**.'
+                      required:
+                        - flugzeugid
+                    - $ref: '#/components/schemas/flugzeug'
+  /reisebueros:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt Reisebüros zurück.
+      description: >-
+        Alle Reisebüros werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, werden diese Reisebüros noch entsprechend gefiltert.
+      parameters:
+        - name: username
+          in: query
+          description: 'Nur Reisebüros, deren **Username** `username` enthalten, werden zurückgegeben.'
+          schema:
+            type: string
         - name: email
           in: query
-          description: >-
-            Nur Benutzer, deren **E-Mail** `email` enthält, werden
-            zurückgegeben.
+          description: 'Nur Reisebüros, deren **E-Mail** `email` enthalten, werden zurückgegeben.'
           schema:
             type: string
-        - name: alter
-          in: query
-          description: >-
-            Nur Benutzer, deren **Alter** größer gleich `alter` ist, werden
-            zurückgegeben.
-          schema:
-            type: integer
       responses:
         '200':
           description: '**OK**.'
@@ -59,46 +221,48 @@ paths:
                   allOf:
                     - type: object
                       properties:
-                        benutzerid:
+                        reisebueroid:
                           type: integer
-                          description: '**RowID des Benutzers**.'
+                          description: '**RowID des Reisebüros**.'
                       required:
-                        - benutzerid
-                    - $ref: '#/components/schemas/benutzer'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
+                        - reisebuero
+                    - $ref: '#/components/schemas/reisebuero'
     post:
+      security:
+        - basic authentication: []
       tags:
         - Anwender
-      summary: Fügt einen Benutzer hinzu.
-      description: Ein Benutzer wird mit den entsprechenden Werten hinzugefügt.
+      summary: Fügt ein Reisebüro hinzu.
+      description: >-
+        Ein Reisebüro wird mit den entsprechenden Werten hinzugefügt.
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/benutzer'
+              $ref: '#/components/schemas/reisebuero'
       responses:
         '201':
           $ref: '#/components/responses/201'
         '400':
           $ref: '#/components/responses/400'
-  '/benutzer/{benutzerid}':
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  '/buchungen':
     get:
       security:
         - basic authentication: []
       tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Gibt einen Benutzer zurück.
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Gibt die eigenen Buchungen (des jeweiligen Reisebüros) zurück.
       description: >-
-        Der **Benutzer mit RowID** `benutzerid` wird zurückgegeben. **Nur für
-        Mitarbeiter und den Benutzer mit RowID `benutzerid`.**
+        Die eigenen Buchungen werden zurückgegeben. Hier werden nur die Buchungen von dem jeweils authentifzierten Reisebüro zurückgegeben.
       parameters:
-        - name: benutzerid
+        - name: rowid
           in: path
-          description: '**RowID des Benutzers**.'
+          description: '**RowID der Buchung**.'
           schema:
             type: integer
           required: true
@@ -111,896 +275,58 @@ paths:
                 allOf:
                   - type: object
                     properties:
-                      benutzerid:
+                      buchungid:
                         type: integer
-                        description: '**RowID des Benutzers**.'
+                        description: '**RowID der Buchung**.'
                     required:
-                      - benutzerid
-                  - $ref: '#/components/schemas/benutzer'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-    patch:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Ändert einen Benutzer.
-      description: >-
-        Der **Benutzer mit RowID** `benutzerid` wird mit den entsprechenden
-        Werten bearbeitet. **Nur für Mitarbeiter und den Benutzer mit RowID
-        `benutzerid`. Mitarbeiter dürfen nicht die E-Mail-Adresse und das
-        Passwort von anderen Benutzern ändern.**
-      parameters:
-        - name: benutzerid
-          in: path
-          description: '**RowID des Benutzers**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                vorname:
-                  type: string
-                  description: '**Vorname** des Benutzers.'
-                nachname:
-                  type: string
-                  description: '**Nachname** des Benutzers.'
-                geburtsdatum:
-                  type: string
-                  format: date-time
-                  description: '**Geburtsdatum** des Benutzers.'
-                email:
-                  type: string
-                  description: '**E-Mail** des Benutzers.'
-                passwort:
-                  type: string
-                  description: '**Passwort** des Benutzers.'
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-    delete:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Löscht einen Benutzer.
-      description: >-
-        Der **Benutzer mit RowID** `benutzerid` und alle Einträge, an denen es
-        beteiligt ist, werden gelöscht. **Nur für Mitarbeiter und Benutzer mit
-        RowID `benutzerid`. Mitarbeiter dürfen sich nicht selbst löschen.**
-      parameters:
-        - name: benutzerid
-          in: path
-          description: '**RowID des Benutzers**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  /filme:
-    get:
-      tags:
-        - Anwender
-      summary: Gibt Filme zurück.
-      description: >-
-        Alle Filme werden zurückgegeben. Falls Query-Parameter mit Werten
-        angegeben wurden, werden diese Filme noch entsprechend gefiltert.
-      parameters:
-        - name: titel
-          in: query
-          description: 'Nur Filme, deren **Titel** `titel` enthalten, werden zurückgegeben.'
-          schema:
-            type: string
-        - name: genre
-          in: query
-          description: >-
-            Nur Filme, die `genre` als **Genre** besitzen, werden zurückgegeben.
-            *Kann mehrmals übergeben werden.*
-          schema:
-            type: string
-        - name: jahr
-          in: query
-          description: >-
-            Nur Filme, die `jahr` als **Veröffentlichungsjahr** besitzen, werden
-            zurückgegeben.
-          schema:
-            type: integer
-        - name: schauspieler
-          in: query
-          description: >-
-            Nur Filme mit **Schauspielern**, deren **Vorname**, **Nachname**
-            oder **Künstlername** `schauspieler` enthält, werden zurückgegeben.
-            *Kann mehrmals übergeben werden.*
-          schema:
-            type: string
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - type: object
-                      properties:
-                        filmid:
-                          type: integer
-                          description: '**RowID des Films**.'
-                      required:
-                        - filmid
-                    - $ref: '#/components/schemas/film'
-    post:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Fügt einen Film hinzu.
-      description: >-
-        Ein Film wird mit den entsprechenden Werten hinzugefügt. **Nur für
-        Mitarbeiter.**
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/film'
-      responses:
-        '201':
-          $ref: '#/components/responses/201'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-  '/filme/{filmid}':
-    get:
-      tags:
-        - Anwender
-      summary: Gibt einen Film zurück.
-      description: Der **Film mit RowID** `filmid` wird zurückgegeben.
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                allOf:
+                      - ticketid
                   - type: object
                     properties:
-                      filmid:
-                        type: integer
-                        description: '**RowID des Films**.'
+                      preis:
+                        type: number
+                        format: double
+                        description: '**Preis** der Buchung.'
+                      datum:
+                        type: string
+                        format: date-time
+                        description: '**Datum** der Buchung.'
                     required:
-                      - filmid
-                  - $ref: '#/components/schemas/film'
-        '404':
-          $ref: '#/components/responses/404'
-    patch:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Ändert einen Film.
-      description: >-
-        Der **Film mit RowID** `filmid` wird mit den entsprechenden Werten
-        bearbeitet. **Nur für Mitarbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                titel:
-                  type: string
-                  description: '**Titel** des Films.'
-                text:
-                  type: string
-                  description: '**Text** des Films.'
-                laenge:
-                  type: integer
-                  description: '**Spiellänge** des Films in Minuten.'
-                datum:
-                  type: string
-                  format: date
-                  description: '**Veröffentlichungsdatum** des Films.'
-                fsk:
-                  type: integer
-                  description: '**Altersbeschränkung** für den Film.'
-                cover:
-                  type: string
-                  format: binary
-                  description: '**Cover** zum Film.'
-                trailer:
-                  type: string
-                  description: '**Trailer** zum Film als YouTube-Link.'
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '400':
-          $ref: '#/components/responses/400'
+                      - buchungid
+                      - preis
+                      - datum
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-    delete:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Löscht einen Film.
-      description: >-
-        Der **Film mit RowID** `filmid` und alle Einträge, an denen er beteiligt
-        ist, werden gelöscht. **Nur für Mitarbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/filme/{filmid}/genres':
-    get:
-      tags:
-        - Anwender
-      summary: Gibt alle Genres zu einem Film zurück.
-      description: Alle Genres zum **Film mit RowID** `filmid` werden zurückgegeben.
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - type: object
-                      properties:
-                        genreid:
-                          type: integer
-                          description: '**RowID des Genres** zum Film.'
-                      required:
-                        - genreid
-                    - $ref: '#/components/schemas/genre'
-        '404':
-          $ref: '#/components/responses/404'
-    post:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Fügt ein Genre zu einem Film hinzu.
-      description: >-
-        Ein Genre wird zum **Film mit RowID** `filmid` hinzugefügt. **Nur für
-        Miratbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                genreid:
-                  type: integer
-                  description: '**RowID des Genres**.'
-      responses:
-        '201':
-          $ref: '#/components/responses/201'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/filme/{filmid}/genres/{genreid}':
-    delete:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Löscht ein Genre zu einem Film.
-      description: >-
-        Das **Genre mit RowID** `genreid` wird zum **Film mit RowID** `filmid`
-        gelöscht. **Nur für Mitarbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-        - name: genreid
-          in: path
-          description: '**RowID des Genres**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/filme/{filmid}/schauspieler':
-    get:
-      tags:
-        - Anwender
-      summary: Gibt alle Schauspieler zu einem Film zurück.
-      description: Alle Schauspieler zum **Film mit RowID** `filmid` werden zurückgegeben.
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - type: object
-                      properties:
-                        schauspielerid:
-                          type: integer
-                          description: '**RowID des Schauspielers**.'
-                      required:
-                        - schauspielerid
-                    - $ref: '#/components/schemas/schauspieler'
-        '404':
-          $ref: '#/components/responses/404'
-    post:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Fügt einen Schauspieler zu einem Film hinzu.
-      description: >-
-        Ein Schauspieler wird zum **Film mit RowID** `filmid` hinzugefügt. **Nur
-        für Mitarbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                schauspielerid:
-                  type: integer
-                  description: '**RowID des Schauspielers**.'
-      responses:
-        '201':
-          $ref: '#/components/responses/201'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/filme/{filmid}/schauspieler/{schauspielerid}':
-    delete:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Löscht einen Schauspieler zu einem Film.
-      description: >-
-        Der **Schauspieler mit RowID** `schauspielerid` wird zum **Film mit
-        RowID** `filmid` gelöscht. **Nur für Mitarbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-        - name: schauspielerid
-          in: path
-          description: '**RowID des Schauspielers**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/filme/{filmid}/bewertungen':
-    get:
-      tags:
-        - Anwender
-      summary: >-
-        Gibt die Anzahl der Bewertungen und die Durchschnittsbewertung eines
-        Films zurück.
-      description: >-
-        Die Anzahl der Bewertungen und die Durchschnittsbewertung zum Film mit
-        der **RowID** `id` werden zurückgegeben.
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                properties:
-                  anzahl:
-                    type: integer
-                    description: '**Anzahl der Bewertungen** zum Film.'
-                  durchschnitt:
-                    type: number
-                    format: double
-                    description: '**Durchschnittsbewertung** zum Film.'
-        '404':
-          $ref: '#/components/responses/404'
-    post:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Fügt eine Bewertung zu einem Film hinzu.
-      description: >-
-        Eine Bewertung wird zum **Film mit RowID** `filmid` mit den
-        entsprechenden Werten hinzugefügt. **Nur für Benutzer.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/bewertung'
-      responses:
-        '201':
-          $ref: '#/components/responses/201'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/filme/{filmid}/vorstellungen':
-    get:
-      tags:
-        - Anwender
-      summary: Gibt Vorstellungen eines Films zurück.
-      description: >-
-        Alle Vorstellungen des **Films mit RowID** `id` werden zurückgegeben.
-        Falls Query-Parameter mit Werten angegeben wurden, werden diese
-        Vorstellungen noch entsprechend gefiltert.
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-        - name: wochentag
-          in: query
-          description: >-
-            Nur Vorstellungen, die am **Wochentag** `wochentag` gezeigt werden,
-            werden zurückgegeben. Mögliche Werte sind 0 (Sonntag) bis 6
-            (Samstag).
-          schema:
-            type: integer
-        - name: sprache
-          in: query
-          description: Nur Vorstellungen in der **Sprache** `sprache` werden zurückgegeben.
-          schema:
-            type: string
-        - name: dreid
-          in: query
-          description: >-
-            Falls `dreid == true` ist, werden nur **3D**-Vorstellungen
-            zurückgegeben.
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - type: object
-                      properties:
-                        vorstellungid:
-                          type: integer
-                          description: '**RowID der Vorstellung**.'
-                      required:
-                        - vorstellungid
-                    - $ref: '#/components/schemas/vorstellung'
-                    - type: object
-                      properties:
-                        filmid:
-                          type: integer
-                          description: >-
-                            **RowID des Films**, der in der Vorstellung gezeigt
-                            wird.
-                        saalid:
-                          type: integer
-                          description: >-
-                            **RowID des Saals**, in dem die Vorstellung gezeigt
-                            wird.
-                      required:
-                        - filmid
-                        - saalid
-        '404':
-          $ref: '#/components/responses/404'
-    post:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Fügt eine Vorstellung zu einem Film hinzu.
-      description: >-
-        Eine Vorstellung zum **Film mit RowID** `id` wird mit den entsprechenden
-        Werten hinzugefügt. **Nur für Mitarbeiter.**
-      parameters:
-        - name: filmid
-          in: path
-          description: '**RowID des Films**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/vorstellung'
-                - type: object
-                  properties:
-                    saalid:
-                      type: integer
-                      description: >-
-                        **RowID des Saals**, in dem die Vorstellung zum Film mit
-                        der **RowID** `filmid` ausgestrahlt wird.
-                  required:
-                    - saalid
-      responses:
-        '201':
-          $ref: '#/components/responses/201'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/vorstellungen/{vorstellungid}':
-    get:
-      tags:
-        - Anwender
-      summary: Gibt eine Vorstellung zurück.
-      description: Der **Vorstellung mit RowID** `vorstellungid` wird zurückgegeben.
-      parameters:
-        - name: vorstellungid
-          in: path
-          description: '**RowID der Vorstellung**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                allOf:
-                  - type: object
-                    properties:
-                      vorstellungid:
-                        type: integer
-                        description: '**RowID der Vorstellung**.'
-                    required:
-                      - vorstellungid
-                  - $ref: '#/components/schemas/vorstellung'
-                  - type: object
-                    properties:
-                      filmid:
-                        type: integer
-                        description: |-
-                          **RowID des Films**, der in der Vorstellung gezeigt
-                            wird.
-                      saalid:
-                        type: integer
-                        description: >-
-                          **RowID des Saals**, in dem die Vorstellung gezeigt
-                          wird.
-                    required:
-                      - filmid
-                      - saalid
-        '404':
-          $ref: '#/components/responses/404'
-    patch:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Ändert eine Vorstellung.
-      description: >-
-        Die **Vorstellung mit RowID** `vorstellungid` wird mit den
-        entsprechenden Werten bearbeitet. **Nur für Mitarbeiter.**
-      parameters:
-        - name: vorstellungid
-          in: path
-          description: '**RowID der Vorstellung**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              allOf:
-                - type: object
-                  properties:
-                    dreid:
-                      type: boolean
-                      description: >-
-                        Falls `dreid == true` ist, ist die Vorstellung in
-                        **3D**.
-                    sprache:
-                      type: string
-                      description: '**Sprache**, in der die Vorstellung ausgestrahlt wird.'
-                    zeitstempel:
-                      type: string
-                      format: date-time
-                      description: '**Zeitstempel**, an dem die Vorstellung läuft.'
-                - type: object
-                  properties:
-                    saalid:
-                      type: integer
-                      description: >-
-                        **RowID des Saals**, in dem die Vorstellung ausgestrahlt
-                        wird.
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-    delete:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Löscht eine Vorstellung.
-      description: >-
-        Die **Vorstellung mit RowID** `vorstellungid` und alle Einträge, an
-        denen sie beteiligt ist, werden gelöscht. **Nur für Mitarbeiter.**
-      parameters:
-        - name: vorstellungid
-          in: path
-          description: '**RowID der Vorstellung**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/vorstellungen/{vorstellungid}/tickets':
+  '/flugtickets':
     get:
       security:
         - basic authentication: []
       tags:
-        - Authentifizierter und als Mitarbeiter authorisierter Anwender
-      summary: Gibt Tickets zu einer Vorstellung zurück.
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Gibt die eigenen Tickets (des jeweiligen Reisebüros) zurück.
       description: >-
-        Alle Tickets zur **Vorstellung mit RowID** `vorstellungid` werden
-        zurückgegeben. **Nur für Mitarbeiter.**
+        Die eigenen Tickets werden zurückgegeben. Hier werden nur die Tickets von dem jeweils authentifzierten Reisebüro zurückgegeben.
       parameters:
-        - name: vorstellungid
-          in: path
-          description: '**RowID der Vorstellung**.'
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: '**OK**.'
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  allOf:
-                    - type: object
-                      properties:
-                        ticketid:
-                          type: integer
-                          description: '**RowID des Tickets**.'
-                      required:
-                        - ticketid
-                    - $ref: '#/components/schemas/ticket'
-                    - type: object
-                      properties:
-                        gesamtpreis:
-                          type: number
-                          format: double
-                          description: '**Gesamtpreis** des Tickets.'
-                        vorstellungid:
-                          type: integer
-                          description: '**RowID der Vorstellung**, für die das Ticket ist.'
-                        benutzerid:
-                          type: integer
-                          description: '**RowID des Benutzers**, für den das Ticket ist.'
-                      required:
-                        - gesamtpreis
-                        - vorstellundid
-                        - benutzerid
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-    post:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Fügt ein Ticket zu einer Vorstellung hinzu.
-      description: >-
-        Ein Ticket wird zur **Vorstellung mit RowID** `vorstellungid` mit den
-        entsprechenden Werten hinzugefügt und von dem Benutzer, für den das Ticket ist, reserviert. **Nur für den
-        Benutzer, für den das Ticket ist.**
-      parameters:
-        - name: vorstellungid
-          in: path
-          description: '**RowID der Vorstellung**.'
-          schema:
-            type: integer
-          required: true
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ticket'
-      responses:
-        '201':
-          $ref: '#/components/responses/201'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  '/tickets/{ticketid}':
-    get:
-      security:
-        - basic authentication: []
-      tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Gibt ein Ticket zurück.
-      description: >-
-        Das **Ticket mit RowID** `ticketid` wird zurückgegeben. **Nur für
-        Mitarbeiter und den Benutzer, der das Ticket mit RowID `ticketid`
-        besitzt.**
-      parameters:
-        - name: ticketid
+        - name: rowid
           in: path
           description: '**RowID des Tickets**.'
           schema:
             type: integer
+          required: true
+        - name: vorname
+          in: path
+          description: 'Nur Tickets, deren **Vorname** `vorname` enthält .'
+          schema:
+            type: string
+          required: true
+        - name: nachname
+          in: path
+          description: 'Nur Tickets, deren **Nachname** `nachname` enthält .'
+          schema:
+            type: string
           required: true
       responses:
         '200':
@@ -1014,45 +340,82 @@ paths:
                       ticketid:
                         type: integer
                         description: '**RowID des Tickets**.'
+                      vorname:
+                        type: string
+                        description: 'Vorname des Passagiers.'
+                      nachname:
+                        type: string
+                        description: 'Nachname des Passagiers.'
+                      geschlecht:
+                        type: string
+                        description: 'Geschlecht des Passagiers.'
+                      gepaeck:
+                        type: boolean
+                        description: 'Gepäck des Passagiers.'
+                      extragepaeck:
+                        type: boolean
+                        description: 'Extragepäck des Passagiers.'
                     required:
                       - ticketid
-                  - $ref: '#/components/schemas/ticket'
-                  - type: object
-                    properties:
-                      gesamtpreis:
-                        type: number
-                        format: double
-                        description: '**Gesamtpreis** des Tickets.'
-                      vorstellungid:
-                        type: integer
-                        description: '**RowID der Vorstellung**, für die das Ticket ist.'
-                      benutzerid:
-                        type: integer
-                        description: '**RowID des Benutzers**, für den das Ticket ist.'
-                    required:
-                      - gesamtpreis
-                      - vorstellungid
-                      - benutzerid
+                      - vorname
+                      - nachname
+                      - geschlecht
+                      - gepaeck
+                      - extragepaeck
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+    post:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Fügt ein Flugticket inkl. Buchung hinzu.
+      description: >-
+        Ein Flugticket wird mit den entsprechenden Werten hinzugefügt. Hierbei wird auch eine **zugeordnete Buchung** angelegt.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ticket'
+                - type: object
+                  properties:
+                    flugid:
+                      type: integer
+                      description: '**RowID** des Flugs.'
+                    preis:
+                      type: number
+                      description: '**Preis** der Buchung.'
+                  required:
+                    - flugid
+                    - preis
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  '/flugtickets/{flugticketid}':
     delete:
       security:
         - basic authentication: []
       tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Löscht ein Ticket.
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Löscht ein Flugticket (inkl. Buchung)
       description: >-
-        Das **Ticket mit RowID** `ticketid` und alle Einträge, an denen es
-        beteiligt ist, werden gelöscht. **Nur für Mitarbeiter und den Benutzer,
-        der das Ticket mit RowID `ticketid` besitzt.**
+        Das **Flugticket mit RowID** `flugticketid` wird  gelöscht. Die zugehörige Buchung wird ebenfalls gelöscht.
       parameters:
-        - name: ticketid
+        - name: flugticketid
           in: path
-          description: '**RowID des Tickets**.'
+          description: '**RowID des Flugtickets**.'
           schema:
             type: integer
           required: true
@@ -1065,21 +428,58 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  '/bewertungen/{bewertungid}':
-    patch:
+  '/flugtickets/{flugticketid}/fluege':
+    get:
       security:
         - basic authentication: []
       tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Ändert eine Bewertung.
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Gibt Flüge zu einem Flugticket zurück.
       description: >-
-        Die **Bewertung mit RowID** `bewertungid` wird mit den entsprechenden
-        Werten bearbeitet. **Nur für den Benutzer, der die Bewertung mit RowID
-        `bewertungid` besitzt.**
+        Gibt **alle** vorhandenen Flüge zu einem Flugticket zurück.
       parameters:
-        - name: bewertungid
+        - name: flugticketid
           in: path
-          description: '**RowID der Bewertung**.'
+          description: '**RowID des Flugtickets**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      flugticketid:
+                        type: integer
+                        description: '**RowID des Flugtickets**.'
+                      flugid:
+                        type: string
+                        description: '**RowID des Flugs**.'
+                    required:
+                      - flugticketid
+                      - flugid
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Fügt einen Flug zu einem Flugticket hinzu.
+      description: >-
+        Ein Flug wird zum **Flugticket** `flugticketid` hinzugefügt.
+      parameters:
+        - name: flugticketid
+          in: path
+          description: '**RowID des Flugtickets**.'
           schema:
             type: integer
           required: true
@@ -1090,12 +490,12 @@ paths:
             schema:
               type: object
               properties:
-                sterne:
+                flugid:
                   type: integer
-                  description: Anzahl der **Sterne**.
+                  description: '**RowID des Flugs**.'
       responses:
-        '204':
-          $ref: '#/components/responses/204'
+        '201':
+          $ref: '#/components/responses/201'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -1104,26 +504,251 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  '/reisen/{reiseid}':
     delete:
       security:
         - basic authentication: []
       tags:
-        - Authentifizierter und als Benutzer authorisierter Anwender
-      summary: Löscht eine Bewertung
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Löscht eine Reise (inkl. Buchung)
       description: >-
-        Die **Bewertung mit RowID** `bewertungid` und alle Einträge, an denen
-        sie beteiligt ist, werden gelöscht. **Nur für Mitarbeiter und den
-        Benutzer, der die Bewertung mit RowID `bewertungid` besitzt.**
+        Die (eigene) **Reise mit RowID** `reiseid` wird inkl. der übergeordneten Buchung gelöscht.
       parameters:
-        - name: bewertungid
+        - name: reiseid
           in: path
-          description: '**RowID der Bewertung**.'
+          description: '**RowID der Reise**.'
           schema:
             type: integer
           required: true
       responses:
         '204':
           $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  '/reisen':
+    get:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Gibt die eigenen Reisen (des jeweiligen Reisebüros) zurück.
+      description: >-
+        Die eigenen Reisen werden zurückgegeben. Hier werden nur die Reisen von dem jeweils authentifzierten Reisebüro zurückgegeben.
+      parameters:
+        - name: rowid
+          in: path
+          description: '**RowID der Reise**.'
+          schema:
+            type: integer
+          required: true
+        - name: titel
+          in: path
+          description: 'Nur Reisen, die im **Titel** `titel` enthalten.'
+          schema:
+            type: string
+          required: true
+        - name: startdatum
+          in: path
+          description: 'Nur Reisen, die am **Datum** `startdatum` beginnen.'
+          schema:
+            type: string
+            format: date-time
+          required: true
+        - name: tags
+          in: path
+          description: 'Nur Reisen, die als **Tags** `tags` besitzen (mehrere werden mit AND verknüpft)'
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      reiseid:
+                        type: integer
+                        description: '**RowID der Reise**.'
+                      titel:
+                        type: string
+                        description: 'Titel der Reise.'
+                      startdatum:
+                        type: string
+                        format: date-time
+                        description: 'Startdatum der Reise.'
+                      rueckkehrdatum:
+                        type: string
+                        format: date-time
+                        description: 'Enddatum der Reise.'
+                    required:
+                      - reiseid
+                      - titel
+                      - startdatum
+                      - rueckkehrdatum
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Fügt eine Reise hinzu (inkl. Buchung).
+      description: >-
+        Eine Reise inkl. Buchung wird angelegt.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/reise'
+                - type: object
+                  properties:
+                    unterkunftid:
+                      type: integer
+                      description: '**RowID** der Unterkunft.'
+                    preis:
+                      type: number
+                      description: '**Preis** der Buchung.'
+                  required:
+                    - unterkunftid
+                    - preis
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  '/reisen/{reiseid}/unterkuenfte':
+    get:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Gibt Unterkünfte zu (eigenen) Reisen zurück.
+      description: >-
+        Alle Unterkünfte zur Reise mit **ReiseID** `reiseid` anzeigen. **Unterkünfte werden nur zurückgegeben, wenn das abfragende Reisebüro auch der Ersteller der Reise ist.**
+      parameters:
+        - name: reiseid
+          in: path
+          description: '**RowID der Reise**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      reiseid:
+                        type: integer
+                        description: '**RowID der Reise**.'
+                      titel:
+                        type: string
+                        description: 'Titel der Reise.'
+                      unterkunftid:
+                        type: string
+                        description: '**RowID der Unterkunft**.'
+                      unterkunft_bez:
+                        type: string
+                        description: 'Bezeichnung der Unterkunft..'
+                    required:
+                      - reiseid
+                      - titel
+                      - unterkunftid
+                      - unterkunft_bez
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  '/reisen/{reiseid}/tags':
+    post:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Fügt einer (eigenen) Reise Tags hinzu.
+      description: >-
+        Fügt der (eigenen) **Reise** mit `reiseid` Tags hinzu.
+      parameters:
+        - name: reiseid
+          in: path
+          description: '**RowID der Reise**.'
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    tag:
+                      type: string
+                      description: 'Bezeichnung des Tags oder mehrere mit AND verknüpft.'
+                  required:
+                    - tag
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    get:
+      security:
+        - basic authentication: []
+      tags:
+        - Authentifizierter und als Reisebüro authorisierter Anwender
+      summary: Gibt die Tags einer Reise zurück.
+      description: >-
+        Alle Tags zur Reise mit **ReiseID** `reiseid` anzeigen.
+      parameters:
+        - name: reiseid
+          in: path
+          description: '**RowID der Reise**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                    - $ref: '#/components/schemas/tag'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1158,130 +783,207 @@ components:
     '404':
       description: '**Not Found**.'
   schemas:
-    benutzer:
+    adresse:
       type: object
       properties:
-        vorname:
+        strasse:
           type: string
-          description: '**Vorname** des Benutzers.'
-        nachname:
+          description: '**Straße** der Adresse.'
+        hausnummer:
           type: string
-          description: '**Nachname** des Benutzers.'
-        geburtsdatum:
+          description: '**Hausnummer** der Adresse.'
+        plz:
           type: string
-          format: date-time
-          description: '**Geburtsdatum** des Benutzers.'
+          description: '**PLZ** der Adresse.'
+        ort:
+          type: string
+          description: '**Ort** der Adresse.'
+        land:
+          type: string
+          description: '**Land** der Adresse.'
+      required:
+        - strasse
+        - hausnummer
+        - ort
+        - plz
+        - land
+    reisebuero:
+      type: object
+      properties:
+        username:
+          type: string
+          description: '**Username** des Reisebüros.'
         email:
           type: string
-          description: '**E-Mail** des Benutzers.'
+          description: '**Email** des Reisebüros.'
         passwort:
           type: string
-          description: '**Passwort** des Benutzers.'
+          description: '**Passwort** des Reisebüros.'
+        adresseid:
+          type: string
+          description: '**AdresseID** des Reisebüros.'
       required:
-        - vorname
-        - nachname
-        - geburtsdatum
+        - username
         - email
         - passwort
-    schauspieler:
+        - adresseid
+    buchung:
+      type: object
+      properties:
+        preis:
+          type: number
+          description: '**Preis** der Buchung.'
+        datum:
+          type: string
+          format: date-time
+          description: '**Datum** der Buchung.'
+        username:
+          type: string
+          description: '**Username** des Reisebüros.'
+      required:
+        - preis
+        - datum
+        - username
+    reise:
+      type: object
+      properties:
+        startzeitpunkt:
+          type: string
+          format: date-time
+          description: '**Startzeitpunkt** der Reise.'
+        dauer:
+          type: integer
+          description: '**Dauer** der Reise in Tagen.'
+        titel:
+          type: string
+          description: '**Titel** der Reise.'
+      required:
+        - startzeitpunkt
+        - dauer
+        - titel
+    ticket:
       type: object
       properties:
         vorname:
           type: string
-          description: '**Vorname** des Schauspielers.'
+          description: '**Vorname** des Reisegasts.'
         nachname:
           type: string
-          description: '**Nachname** des Schauspielers.'
-        geburtsdatum:
+          description: '**Nachname** des Reisegasts.'
+        geschlecht:
           type: string
-          format: date-time
-          description: '**Geburtsdatum** des Schauspielers.'
-        kuenstlername:
-          type: string
-          description: '**Künstlername** des Schauspielers.'
+          description: '**Geschlecht** des Reisegasts.'
+        gepaeck:
+          type: boolean
+          description: '**Gepäck** des Reisegasts.'
+        extragepaeck:
+          type: boolean
+          description: '**Extragepäck** des Reisegasts.'
       required:
         - vorname
         - nachname
-        - geburtsdatum
-        - kuenstlername
-    genre:
+        - gepaeck
+        - extragepaeck
+        - geschlecht
+    unterkunft:
       type: object
       properties:
         bezeichnung:
           type: string
-          description: '**Bezeichnung** des Genres, das Filme beschreibt.'
-      required:
-        - bezeichnung
-    film:
-      type: object
-      properties:
-        titel:
-          type: string
-          description: '**Titel** des Films.'
-        text:
-          type: string
-          description: '**Text** des Films.'
-        laenge:
-          type: integer
-          description: '**Spiellänge** des Films in Minuten.'
-        datum:
-          type: string
-          format: date
-          description: '**Veröffentlichungsdatum** des Films.'
-        fsk:
-          type: integer
-          description: '**Altersbeschränkung** für den Film.'
-        cover:
-          type: string
-          format: binary
-          description: '**Cover** zum Film.'
-        trailer:
-          type: string
-          description: '**Trailer** zum Film als YouTube-Link.'
-      required:
-        - titel
-        - text
-        - laenge
-        - datum
-        - fsk
-    vorstellung:
-      type: object
-      properties:
-        dreid:
-          type: boolean
-          description: 'Falls `dreid == true` ist, ist die Vorstellung in **3D**.'
-        sprache:
-          type: string
-          description: '**Sprache**, in der die Vorstellung ausgestrahlt wird.'
-        zeitstempel:
-          type: string
-          format: date-time
-          description: '**Zeitstempel**, an dem die Vorstellung läuft.'
-      required:
-        - dreid
-        - sprache
-        - zeitstempel
-    ticket:
-      type: object
-      properties:
-        kind:
-          type: boolean
-          description: 'Gibt an, ob es ein **Kinderticket** ist oder nicht.'
-        reihe:
-          type: string
-          description: '**Reihe des Platzes** im Saal für die Vorstellung.'
-        nummer:
-          type: integer
-          description: '**Nummer des Platzes** im Saal für die Vorstellung.'
-      required:
-        - kind
-        - reihe
-        - nummer
-    bewertung:
-      type: object
-      properties:
+          description: '**Bezeichnung** der Unterkunft.'
         sterne:
           type: integer
-          description: Anzahl der **Sterne**.
+          description: '**Hotelsterne** der Unterkunft.'
+        adresseid:
+          type: integer
+          description: '**AdresseID** der Unterkunft.'
       required:
+        - bezeichnung
         - sterne
+        - adresseid
+    flug:
+      type: object
+      properties:
+        startzeitpunkt:
+          type: string
+          format: date-time
+          description: '**Startzeitpunkt** des Flugs.'
+        dauer:
+          type: integer
+          description: '**Flugdauer** in Minuten.'
+        flugzeug:
+          type: integer
+          description: '**Flugzeug** des Flugs.'
+        startflughafen:
+          type: string
+          description: '**Startflughafen** des Flugs.'
+        zielflughafen:
+          type: string
+          description: '**Zielflughafen** des Flugs.'
+        fluggesellschaft:
+          type: string
+          description: '**Fluggesellschaft** des Flugs.'
+      required:
+        - startzeitpunkt
+        - dauer
+        - flugzeug
+        - startflughafen
+        - zielflughafen
+        - fluggesellschaft
+    flughafen:
+      type: object
+      properties:
+        bezeichnung:
+          type: string
+          description: '**Bezeichnung** des Flughafens.'
+      required:
+        - bezeichnung
+    fluggesellschaft:
+      type: object
+      properties:
+        bezeichnung:
+          type: string
+          description: '**Bezeichnung** der Fluggesellschaft.'
+      required:
+        - bezeichnung
+    bild:
+      type: object
+      properties:
+        daten:
+          type: string
+          format: binary
+          description: '**Bilddaten**.'
+        unterkunftid:
+          type: integer
+          description: 'Die auf dem Bild gezeigte **Unterkunft**.'
+      required:
+        - daten
+        - unterkunftid
+    flugzeug:
+      type: object
+      properties:
+        baujahr:
+          type: integer
+          description: '**Baujahr** des Flugzeugs.'
+        crewanzahl:
+          type: integer
+          description: '**Crewanzahl** des Flugzeugs.'
+        passagieranzahl:
+          type: integer
+          description: '**Passagieranzahl** des Flugzeugs.'
+        modellbezeichnung:
+          type: string
+          description: '**Modellbezeichnung** des Flugzeugs.'
+      required:
+        - baujahr
+        - crewanzahl
+        - passagieranzahl
+        - modellbezeichnung
+    tag:
+      type: object
+      properties:
+        bezeichnung:
+          type: string
+          description: '**Name** des Tags.'
+      required:
+        - bezeichnung
