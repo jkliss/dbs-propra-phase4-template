@@ -28,7 +28,7 @@ public class UnterkunftController {
         Connection connection = dataSource.getConnection();
         String stringStatement = "SELECT * From Unterkunft";
         if(bezeichnung != null || sterne != null || top != null){ stringStatement = stringStatement += " WHERE 1=1"; }
-        if (bezeichnung != null) stringStatement = stringStatement + " AND Bezeichnung=\""+ bezeichnung +"\" ";
+        if (bezeichnung != null) stringStatement = stringStatement + " AND Bezeichnung LIKE \"%"+ bezeichnung +"%\" ";
         if (sterne != null) stringStatement = stringStatement + " AND Hotelsterne="+ sterne;
         if (top != null) stringStatement = stringStatement + " AND ID IN (SELECT Unterkunft_ID FROM Reise_belegt_Unterkunft WHERE Unterkunft_ID IN (SELECT ID FROM ("+stringStatement+")) GROUP BY Unterkunft_ID ORDER BY count(*) DESC LIMIT "+ top + ")";
         System.out.println(stringStatement +";");

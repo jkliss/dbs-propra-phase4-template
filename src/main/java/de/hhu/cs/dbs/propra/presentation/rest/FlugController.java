@@ -20,6 +20,10 @@ public class FlugController {
     @Context
     private SecurityContext securityContext;
 
+
+    // Kapitel 3 7 16 JERSEY!
+
+
     @Context
     private UriInfo uriInfo;
 
@@ -28,8 +32,13 @@ public class FlugController {
         Connection connection = dataSource.getConnection();
         String stringStatement = "SELECT f.*,fdf1.Flughafen_Bezeichnung,fdf2.Flughafen_Bezeichnung FROM Flug f, Flug_durchgefuehrt_Flughafen fdf1, Flug_durchgefuehrt_Flughafen fdf2 WHERE f.ID = fdf1.Flug_ID AND fdf2.Zielflughafen = true AND f.ID = fdf1.Flug_ID AND fdf1.Zielflughafen = false";
         if (startflughafen != null) stringStatement = stringStatement + " AND fdf1.Flughafen_Bezeichnung=\""+ startflughafen +"\" ";
-        // Wie ist das gemeint?
-        if (startzeitpunkt != null) stringStatement = stringStatement + " AND Startzeitpunkt="+ startzeitpunkt;
+        if (startzeitpunkt != null) {
+            String[] splits = startzeitpunkt.split(" ");
+            String day_start = " CAST(strftime('%s',\"" + splits[0] + " 00:00:00\") as INTEGER) ";
+            String day_end = " CAST(strftime('%s',\"" + splits[0] + " 23:59:59\") as INTEGER) ";
+            String start_point = " CAST(strftime('%s',f.Flugstart) as INTEGER) ";
+            stringStatement = stringStatement + " AND "+ start_point +">="+ day_start + " AND "+start_point+"<=" + day_end;
+        }
         if (zielflughafen != null) stringStatement = stringStatement + " AND fdf2.Flughafen_Bezeichnung=\""+ zielflughafen +"\" ";
         if (flugzeugid != null) stringStatement = stringStatement + " AND Flugzeug_ID="+ flugzeugid;
         System.out.println(stringStatement +";");
