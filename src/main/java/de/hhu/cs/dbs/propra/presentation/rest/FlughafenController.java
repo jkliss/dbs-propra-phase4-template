@@ -24,25 +24,29 @@ public class FlughafenController {
     private UriInfo uriInfo;
 
     @GET // GET http://localhost:8080
-    public Response list_flughaefen(@QueryParam("bezeichnung") String bezeichnung, List<String> names) throws SQLException {
-        Connection connection = dataSource.getConnection();
-        String stringStatement = "SELECT rowid,* From Flughafen";
-        if (bezeichnung != null) stringStatement = stringStatement + " WHERE Bezeichnung LIKE\"%"+ bezeichnung +"%\"";
-        PreparedStatement preparedStatement = connection.prepareStatement(stringStatement + ";");
-        preparedStatement.closeOnCompletion();
-        ResultSet resultSet = preparedStatement.executeQuery();
-        List<Map<String, Object>> entities = new ArrayList<>();
-        Map<String, Object> entity;
-        while (resultSet.next()) {
-            entity = new LinkedHashMap<>();
-            entity.put("flughafenid", resultSet.getObject(1));
-            entity.put("bezeichnung", resultSet.getObject(2));
-            entities.add(entity);
+    public Response list_flughaefen(@QueryParam("bezeichnung") String bezeichnung) {
+        try{
+            Connection connection = dataSource.getConnection();
+            String stringStatement = "SELECT rowid,* From Flughafen";
+            if (bezeichnung != null) stringStatement = stringStatement + " WHERE Bezeichnung LIKE\"%"+ bezeichnung +"%\"";
+            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement + ";");
+            preparedStatement.closeOnCompletion();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Map<String, Object>> entities = new ArrayList<>();
+            Map<String, Object> entity;
+            while (resultSet.next()) {
+                entity = new LinkedHashMap<>();
+                entity.put("flughafenid", resultSet.getObject(1));
+                entity.put("bezeichnung", resultSet.getObject(2));
+                entities.add(entity);
+            }
+            resultSet.close();
+            connection.close();
+            return Response.status(Response.Status.OK).entity(entities).build();
+        } catch (SQLException ex){
+            ex.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getErrorCode()).build();
         }
-        resultSet.close();
-        connection.close();
-        return Response.status(Response.Status.OK).entity(entities).build();
     }
-
 }
 
