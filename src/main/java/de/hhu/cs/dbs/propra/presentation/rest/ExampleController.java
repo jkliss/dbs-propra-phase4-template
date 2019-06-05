@@ -39,7 +39,7 @@ public class ExampleController {
     }
 
     @Path("foo")
-    @RolesAllowed({"USER", "EMPLOYEE", "ADMIN"})
+    @RolesAllowed({"OFFICE"})
     @GET
     // GET http://localhost:8080/foo => OK, wenn Benutzer die Rolle "USER", "EMPLOYEE" oder "ADMIN" hat. Siehe SQLiteUserRepository.
     public String halloFoo() {
