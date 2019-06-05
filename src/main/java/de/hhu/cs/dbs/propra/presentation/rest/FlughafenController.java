@@ -27,7 +27,7 @@ public class FlughafenController {
     public Response list_flughaefen(@QueryParam("bezeichnung") String bezeichnung, List<String> names) throws SQLException {
         Connection connection = dataSource.getConnection();
         String stringStatement = "SELECT rowid,* From Flughafen";
-        if (bezeichnung != null) stringStatement = stringStatement + " WHERE Bezeichnung=\""+ bezeichnung +"\"";
+        if (bezeichnung != null) stringStatement = stringStatement + " WHERE Bezeichnung LIKE\"%"+ bezeichnung +"%\"";
         PreparedStatement preparedStatement = connection.prepareStatement(stringStatement + ";");
         preparedStatement.closeOnCompletion();
         ResultSet resultSet = preparedStatement.executeQuery();

@@ -28,8 +28,8 @@ public class ReisebueroController {
         Connection connection = dataSource.getConnection();
         String stringStatement = "SELECT rowid,* From Reisebuero";
         if (username != null || email != null) stringStatement = stringStatement + " WHERE ";
-        if (username != null) { stringStatement = stringStatement + " AND Username=" + username;}
-        if (email != null) { stringStatement = stringStatement + " AND E_Mail=" + email;}
+        if (username != null) { stringStatement = stringStatement + " AND Username LIKE \"%" + username + "\"%";}
+        if (email != null) { stringStatement = stringStatement + " AND E_Mail LIKE \"%" + email + "\"%";}
         PreparedStatement preparedStatement = connection.prepareStatement(stringStatement + ";");
         preparedStatement.closeOnCompletion();
         ResultSet resultSet = preparedStatement.executeQuery();
