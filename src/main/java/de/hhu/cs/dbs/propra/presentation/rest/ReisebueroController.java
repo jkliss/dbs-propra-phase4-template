@@ -55,10 +55,8 @@ public class ReisebueroController {
             ex.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getErrorCode()).build();
         }
-
     }
 
-    //curl -X POST "http://localhost:8080/reisebueros" -H  "accept: */*" -H  "Content-Type: multipart/form-data" -F "username=pers" -F "email=em@go.ml" -F "passwort=asdfs23131" -F "adresseid=2"
     @POST
     public Response insert_reisebuero(@FormDataParam("username") String username, @FormDataParam("email")  String email , @FormDataParam("passwort")  String password, @FormDataParam("adresseid") String addresseid) {
         System.out.println("Start!");
@@ -84,7 +82,5 @@ public class ReisebueroController {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
         }
     }
-
-
 }
 

@@ -280,6 +280,5 @@ public class ReiseController {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity("SQL Error").build();
         }
     }
-
 }
 

@@ -20,9 +20,7 @@ public class FlugController {
     @Context
     private SecurityContext securityContext;
 
-
     // Kapitel 3 7 16 JERSEY!
-
 
     @Context
     private UriInfo uriInfo;
@@ -67,6 +65,5 @@ public class FlugController {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getErrorCode()).build();
         }
     }
-
 }
 

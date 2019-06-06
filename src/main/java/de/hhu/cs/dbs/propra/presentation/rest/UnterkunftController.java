@@ -53,8 +53,6 @@ public class UnterkunftController {
             ex.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getErrorCode()).build();
         }
-
     }
-
 }
 
