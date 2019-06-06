@@ -32,13 +32,17 @@ public class BuchungenController {
     @GET
     @RolesAllowed({"OFFICE"})
     @Path("/buchung")
-    public Response list_own_bookings(){
+    public Response list_own_bookings(@QueryParam("rowid") String rowid){
         try{
+            if(rowid == null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("No RowID").build();
+            }
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT * From Buchung WHERE Reisebuero_Username = ?;";
+            String stringStatement = "SELECT * From Buchung WHERE Reisebuero_Username = ? AND rowid = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,securityContext.getUserPrincipal().getName());
+            preparedStatement.setObject(2,rowid);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Map<String, Object>> entities = new ArrayList<>();
             Map<String, Object> entity;
