@@ -45,7 +45,7 @@ public class FlughafenController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getErrorCode()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 }

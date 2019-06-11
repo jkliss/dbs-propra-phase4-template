@@ -31,18 +31,14 @@ public class BuchungenController {
 
     @GET
     @RolesAllowed({"OFFICE"})
-    @Path("/buchung")
-    public Response list_own_bookings(@QueryParam("rowid") String rowid){
+    @Path("/buchungen")
+    public Response list_own_bookings(){
         try{
-            if(rowid == null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("No RowID").build();
-            }
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT * From Buchung WHERE Reisebuero_Username = ? AND rowid = ?;";
+            String stringStatement = "SELECT * From Buchung WHERE Reisebuero_Username = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,securityContext.getUserPrincipal().getName());
-            preparedStatement.setObject(2,rowid);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Map<String, Object>> entities = new ArrayList<>();
             Map<String, Object> entity;
@@ -58,7 +54,7 @@ public class BuchungenController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getErrorCode()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getMessage()).build();
         }
     }
 }

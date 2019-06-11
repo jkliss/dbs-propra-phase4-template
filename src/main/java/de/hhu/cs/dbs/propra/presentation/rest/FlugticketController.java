@@ -32,10 +32,13 @@ public class FlugticketController {
     @GET
     @RolesAllowed({"OFFICE"})
     @Path("/flugtickets")
-    public Response list_own_flight_tickets(){
+    public Response list_own_flight_tickets(@QueryParam("vorname") String vorname, @QueryParam("nachname") String nachname){
         try{
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT ft.* From Buchung b, Flugticket ft WHERE b.Reisebuero_Username = ? AND ft.Buchung_ID = b.ID;";
+            String stringStatement = "SELECT ft.* From Buchung b, Flugticket ft WHERE b.Reisebuero_Username = ? AND ft.Buchung_ID = b.ID ";
+            if(vorname != null) stringStatement += " AND ft.Vorname LIKE \"%"+ vorname +"%\" ";
+            if(nachname != null) stringStatement += " AND ft.Nachname LIKE \"%"+ nachname +"%\" ";
+            stringStatement = stringStatement + ";";
             PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,securityContext.getUserPrincipal().getName());
@@ -107,10 +110,10 @@ public class FlugticketController {
             exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.status(Response.Status.OK).entity(exit_code).build();
+            return Response.status(Response.Status.CREATED).entity("CREATED.").build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("BAD REQUEST.").build();
         }
     }
 
@@ -143,7 +146,7 @@ public class FlugticketController {
             return Response.status(Response.Status.OK).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
@@ -174,7 +177,7 @@ public class FlugticketController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
@@ -202,7 +205,7 @@ public class FlugticketController {
             return Response.status(Response.Status.OK).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 }

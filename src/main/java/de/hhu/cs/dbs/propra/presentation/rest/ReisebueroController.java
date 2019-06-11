@@ -53,7 +53,7 @@ public class ReisebueroController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getErrorCode()).build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
@@ -79,7 +79,7 @@ public class ReisebueroController {
             return Response.status(Response.Status.OK).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 }

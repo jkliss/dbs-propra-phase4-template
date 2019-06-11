@@ -39,7 +39,7 @@ public class ReiseController {
             if (reiseid == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
             }
-            // DELETE Flights of Ticket
+            // DELETE Unterkunft of Reise
             String stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
             System.out.println(stringStatement);
             PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
@@ -47,7 +47,7 @@ public class ReiseController {
             preparedStatement.setObject(1, reiseid);
             int exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
-            // DELETE Ticket
+            // DELETE Reise
             stringStatement = "DELETE FROM Reise WHERE Buchung_ID = ?";
             System.out.println(stringStatement);
             preparedStatement = connection.prepareStatement(stringStatement);
@@ -59,19 +59,18 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
     @Path("/reisen")
     @GET
     @RolesAllowed({"OFFICE"})
-    public Response list_reisen(@QueryParam("rowid") String rowid, @QueryParam("titel") String titel, @QueryParam("startdatum") String startdatum, @QueryParam("tags") String tags){
+    public Response list_reisen(@QueryParam("titel") String titel, @QueryParam("startdatum") String startdatum, @QueryParam("tags") String tags){
         try{
             Connection connection = dataSource.getConnection();
             // Checken ob wirklich Tage berechnet sind!
             String stringStatement = "SELECT DISTINCT r.*,datetime(CAST(strftime('%s',r.Startzeitpunkt) as INTEGER)+(r.Dauer*60*60*24),'unixepoch') From Reise r, Reise_belegt_Unterkunft rbu WHERE r.Buchung_ID = rbu.Reise_Buchung_ID ";
-            if (rowid != null) stringStatement = stringStatement + " AND r.Buchung_ID = ? ";
             if (titel != null) stringStatement = stringStatement + " AND r.Titel LIKE \"%"+ titel +"%\"";
             if (startdatum != null) {
                 String[] splits = startdatum.split(" ");
@@ -108,7 +107,7 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getErrorCode()).build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
@@ -169,7 +168,7 @@ public class ReiseController {
             return Response.status(Response.Status.CREATED).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
@@ -182,7 +181,8 @@ public class ReiseController {
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();
             }
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT b.ID,r.Titel,u.ID,u.Bezeichnung FROM Buchung b, Unterkunft u, Reise r, Reise_belegt_Unterkunft rbu WHERE u.ID = rbu.Unterkunft_ID AND r.Buchung_ID = rbu.Reise_Buchung_ID AND b.ID = ? AND b.Reisebuero_Username = ?;";
+            String stringStatement = "SELECT r.Buchung_ID,r.Titel,u.* FROM Buchung b, Unterkunft u, Reise r, Reise_belegt_Unterkunft rbu WHERE r.Buchung_ID = b.ID AND u.ID = rbu.Unterkunft_ID AND r.Buchung_ID = rbu.Reise_Buchung_ID AND b.ID = ? AND b.Reisebuero_Username = ?;";
+            System.out.println(stringStatement);
             PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,reiseid);
@@ -203,7 +203,7 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("SQL Error").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
@@ -247,7 +247,7 @@ public class ReiseController {
             }
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Error in SQL").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 
@@ -260,7 +260,7 @@ public class ReiseController {
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();
             }
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT Tag_Bezeichnung FROM Reise_hat_Tag WHERE Reise_ID = ?;";
+            String stringStatement = "SELECT rht.Tag_Bezeichnung FROM Reise_hat_Tag rht, Reise r WHERE r.Buchung_ID = rht.Reise_ID AND Reise_ID = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,reiseid);
@@ -277,7 +277,7 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("SQL Error").build();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
     }
 }
