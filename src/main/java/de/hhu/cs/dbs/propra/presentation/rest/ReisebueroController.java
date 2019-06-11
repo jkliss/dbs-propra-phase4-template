@@ -63,7 +63,7 @@ public class ReisebueroController {
         try{
             Connection connection = dataSource.getConnection();
             if (username == null || email == null || password == null || addresseid == null){
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Parameter/s missing!").build();
             }
             String stringStatement = "INSERT INTO Reisebuero(Username, E_Mail, Passwort, Adresse_ID) values(?,?,?,?);";
             System.out.println(stringStatement);
@@ -75,11 +75,14 @@ public class ReisebueroController {
             preparedStatement.setObject(4, addresseid);
             int exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
+            if(exit_code == 0){
+                return Response.status((Response.Status.BAD_REQUEST)).entity("Could Not Insert").build();
+            }
             connection.close();
             return Response.status(Response.Status.OK).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 }

@@ -71,7 +71,7 @@ public class FlugticketController {
         try{
             Connection connection = dataSource.getConnection();
             if (vorname == null || nachname == null || preis == null || flugid == null || geschlecht == null || gepaeck == null || extragepaeck == null){
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Parameter/s missing!").build();
             }
             // Create Buchung
             System.out.println("Buchung");
@@ -134,7 +134,7 @@ public class FlugticketController {
             preparedStatement.setObject(1, flugticketid);
             int exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
-            // DELETE Ticket
+            // DELETE Ticket **/
             stringStatement = "DELETE FROM Flugticket WHERE Buchung_ID = ?";
             System.out.println(stringStatement);
             preparedStatement = connection.prepareStatement(stringStatement);

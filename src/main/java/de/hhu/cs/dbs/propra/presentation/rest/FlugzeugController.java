@@ -30,7 +30,7 @@ public class FlugzeugController {
             String stringStatement = "SELECT * From Flugzeug";
             if(flugzeugid != null || modell != null || baujahr != null || passagieranzahl != null || crewanzahl != null){ stringStatement = stringStatement += " WHERE 1=1"; }
             if (flugzeugid != null) stringStatement = stringStatement + " AND Flugzeug_ID="+ flugzeugid +" ";
-            if (modell != null) stringStatement = stringStatement + " AND Modellbezeichnung=\""+ modell +"\" ";
+            if (modell != null) stringStatement = stringStatement + " AND Modellbezeichnung LIKE \"%"+ modell +"%\" ";
             if (baujahr != null) stringStatement = stringStatement + " AND Baujahr="+ baujahr +" ";
             if (passagieranzahl != null) stringStatement = stringStatement + " AND Passagiere>="+ passagieranzahl +" ";
             if (crewanzahl != null) stringStatement = stringStatement + " AND Crewmitglieder>="+ crewanzahl +" ";

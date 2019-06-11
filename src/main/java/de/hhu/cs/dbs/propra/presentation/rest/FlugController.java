@@ -20,7 +20,7 @@ public class FlugController {
     @Context
     private SecurityContext securityContext;
 
-    // Kapitel 3 7 16 JERSEY!
+    // Kapitel 3 7 16 JERSEY
 
     @Context
     private UriInfo uriInfo;
