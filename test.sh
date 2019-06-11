@@ -73,7 +73,7 @@ echo ""
 curl -X GET "http://localhost:8080/flugtickets" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 
-
 echo "AUTH DELETE /flugtickets/"
 curl -X DELETE "http://localhost:8080/flugtickets/5" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 curl -X DELETE "http://localhost:8080/flugtickets/5" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+
