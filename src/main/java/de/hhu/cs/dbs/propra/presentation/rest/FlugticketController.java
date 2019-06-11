@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.lang.annotation.Retention;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -110,7 +111,7 @@ public class FlugticketController {
             exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.status(Response.Status.CREATED).entity("CREATED.").build();
+            return Response.created(UriBuilder.fromUri("http://localhost:8080/flugtickets?vorname="+vorname+"&nachname="+nachname).build()).build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).entity("BAD REQUEST.").build();
@@ -143,7 +144,10 @@ public class FlugticketController {
             exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.status(Response.Status.OK).entity(exit_code).build();
+            if (exit_code == 0){
+                return Response.status(Response.Status.NO_CONTENT).entity("Kein Flugticket mit ID "+flugticketid).build();
+            }
+            return Response.status(Response.Status.OK).entity("Erfolgreich gelöscht.").build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
@@ -202,7 +206,7 @@ public class FlugticketController {
             int exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.status(Response.Status.OK).entity(exit_code).build();
+            return Response.created(UriBuilder.fromUri("http://localhost:8080/flugtickets/"+flugticketid+"/fluege").build()).build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();

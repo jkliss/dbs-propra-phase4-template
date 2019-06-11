@@ -79,7 +79,7 @@ public class ReisebueroController {
                 return Response.status((Response.Status.BAD_REQUEST)).entity("Could Not Insert").build();
             }
             connection.close();
-            return Response.status(Response.Status.OK).entity(exit_code).build();
+            return Response.created(UriBuilder.fromUri("http://localhost:8080/reisebueros?username="+username).build()).build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();

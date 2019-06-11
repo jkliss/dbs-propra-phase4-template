@@ -165,7 +165,7 @@ public class ReiseController {
             exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.status(Response.Status.CREATED).entity(exit_code).build();
+            return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen?titel="+titel).build()).build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
@@ -239,8 +239,7 @@ public class ReiseController {
                     System.out.println(exit_insert_code);
                 }
                 connection.close();
-                return Response.status(Response.Status.CREATED).entity("Alle Tags eingetragen").build();
-
+                return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+reiseid+"/tags").build()).build();
             } else {
                 connection.close();
                 return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung").build();
