@@ -110,7 +110,7 @@ curl -X POST "http://localhost:8080/reisen" -H  "accept: */*" -H  "Authorization
 echo ""
 
 echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
-curl -X GET "http://localhost:8080/reisen/1/unterkuenfte" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+curl -X GET "http://localhost:8080/reisen/27/unterkuenfte" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 
 echo "AUTH POST /reisen/{reiseid}/unterkuenfte"
@@ -121,6 +121,9 @@ echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
 curl -X GET "http://localhost:8080/reisen/4/tags" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 
-echo "POST /reisen​/{reiseid}​/tags"
+echo "AUTH POST /reisen​/{reiseid}​/tags"
 curl -X POST "http://localhost:8080/reisen/4/tags" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "tag=Fun"
 echo ""
+
+echo "AUTH POST /reisen​/{reiseid}​/tags"
+curl -X GET "http://localhost:8080/reisen/51/tags" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="

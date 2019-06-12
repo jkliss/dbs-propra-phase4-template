@@ -265,10 +265,28 @@ public class ReiseController {
             if (reiseid == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();
             }
+            String stringStatement = null;
+            PreparedStatement preparedStatement = null;
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT r.Buchung_ID,r.Titel,u.* FROM Buchung b, Unterkunft u, Reise r, Reise_belegt_Unterkunft rbu WHERE r.Buchung_ID = b.ID AND u.ID = rbu.Unterkunft_ID AND r.Buchung_ID = rbu.Reise_Buchung_ID AND b.ID = ? AND b.Reisebuero_Username = ?;";
+            // CHECK REISEBUERO AND REISE Vorhanden
+            try {
+                stringStatement = "SELECT b.ID FROM Buchung b, Reise r WHERE b.Reisebuero_Username = ? AND b.ID = ? AND r.Buchung_ID = b.ID;";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
+                preparedStatement.setObject(2, reiseid);
+                if(!preparedStatement.executeQuery().next()){
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            stringStatement = "SELECT r.Buchung_ID,r.Titel,u.* FROM Buchung b, Unterkunft u, Reise r, Reise_belegt_Unterkunft rbu WHERE r.Buchung_ID = b.ID AND u.ID = rbu.Unterkunft_ID AND r.Buchung_ID = rbu.Reise_Buchung_ID AND b.ID = ? AND b.Reisebuero_Username = ?;";
             System.out.println(stringStatement);
-            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,reiseid);
             preparedStatement.setObject(2,securityContext.getUserPrincipal().getName());
@@ -381,11 +399,29 @@ public class ReiseController {
     public Response list_tags_von_reise(@PathParam("reiseid") Integer reiseid){
         try{
             if (reiseid == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Reise ID").build();
             }
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT rht.Tag_Bezeichnung FROM Reise_hat_Tag rht, Reise r WHERE r.Buchung_ID = rht.Reise_ID AND Reise_ID = ?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
+            String stringStatement = null;
+            PreparedStatement preparedStatement = null;
+            // CHECK REISEBUERO AND REISE Vorhanden
+            try {
+                stringStatement = "SELECT b.ID FROM Buchung b, Reise r WHERE b.Reisebuero_Username = ? AND b.ID = ? AND r.Buchung_ID = b.ID;";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
+                preparedStatement.setObject(2, reiseid);
+                if(!preparedStatement.executeQuery().next()){
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            stringStatement = "SELECT rht.Tag_Bezeichnung FROM Reise_hat_Tag rht, Reise r WHERE r.Buchung_ID = rht.Reise_ID AND Reise_ID = ?;";
+            preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,reiseid);
             ResultSet resultSet = preparedStatement.executeQuery();

@@ -239,8 +239,26 @@ public class FlugticketController {
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
             }
             Connection connection = dataSource.getConnection();
-            String stringStatement = "SELECT fbf.* From Flugticket ft, Flugticket_beinhaltet_Flug fbf WHERE ft.Buchung_ID = fbf.Flugticket_Buchung_ID AND ft.Buchung_ID = ?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
+            String stringStatement;
+            PreparedStatement preparedStatement;
+            // CHECK REISEBUERO AND TICKET Vorhanden
+            try {
+                stringStatement = "SELECT Buchung_ID FROM Flugticket ft, Buchung b WHERE b.Reisebuero_Username = ? AND b.ID = ? AND f.Buchung_ID = b.ID;";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
+                preparedStatement.setObject(2, flugticketid);
+                if(!preparedStatement.executeQuery().next()){
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            stringStatement = "SELECT fbf.* From Flugticket ft, Flugticket_beinhaltet_Flug fbf WHERE ft.Buchung_ID = fbf.Flugticket_Buchung_ID AND ft.Buchung_ID = ?;";
+            preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1,flugticketid);
             ResultSet resultSet = preparedStatement.executeQuery();
