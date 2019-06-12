@@ -270,19 +270,36 @@ public class FlugticketController {
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
             }
             Connection connection = dataSource.getConnection();
-
+            String stringStatement;
+            PreparedStatement preparedStatement;
+            // CHECK REISEBUERO AND TICKET Vorhanden
+            try {
+                stringStatement = "SELECT Buchung_ID FROM Flugticket ft, Buchung b WHERE b.Reisebuero_Username = ? AND b.ID = ? AND f.Buchung_ID = b.ID;";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
+                preparedStatement.setObject(2, flugticketid);
+                if(!preparedStatement.executeQuery().next()){
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
             // Create Buchung
             System.out.println("Buchung");
-            String stringStatement = "INSERT INTO Flugticket_beinhaltet_Flug(Flugticket_Buchung_ID,Flug_ID) values(?,?);";
+            stringStatement = "INSERT INTO Flugticket_beinhaltet_Flug(Flugticket_Buchung_ID,Flug_ID) values(?,?);";
             System.out.println(stringStatement);
-            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, flugticketid);
             preparedStatement.setObject(2,flugid);
             int exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.created(UriBuilder.fromUri("http://localhost:8080/flugtickets/"+flugticketid+"/fluege").build()).build();
+            return Response.created(UriBuilder.fromUri("http://localhost:8080/flugtickets/"+flugticketid+"/fluege/"+flugid).build()).build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
