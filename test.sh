@@ -93,6 +93,10 @@ echo "AUTH DELETE flugtickets/X/fluege"
 curl -X DELETE "http://localhost:8080/reisen/27" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 
+echo "AUTH DELETE reisen/reiseid"
+curl -X DELETE "http://localhost:8080/reisen/52" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+
 echo "AUTH GET /reisen"
 curl -X GET "http://localhost:8080/reisen?titel=a" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
@@ -116,3 +120,4 @@ echo ""
 echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
 curl -X GET "http://localhost:8080/reisen/4/tags" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
+

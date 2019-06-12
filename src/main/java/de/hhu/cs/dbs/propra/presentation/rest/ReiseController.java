@@ -36,29 +36,100 @@ public class ReiseController {
     @DELETE
     public Response delete_reise(@PathParam("reiseid") Integer reiseid) {
         try{
+            String stringStatement = null;
+            PreparedStatement preparedStatement = null;
             Connection connection = dataSource.getConnection();
+            // CHECK REISEBUERO AND REISE Vorhanden
+            try {
+                stringStatement = "SELECT b.ID FROM Buchung b, Reise r WHERE b.Reisebuero_Username = ? AND b.ID = ? AND r.Buchung_ID = b.ID;";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
+                preparedStatement.setObject(2, reiseid);
+                if(!preparedStatement.executeQuery().next()){
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            connection.setAutoCommit(false);
             if (reiseid == null){
                 return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
             }
+
             // DELETE Unterkunft of Reise
-            String stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
-            System.out.println(stringStatement);
-            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
-            preparedStatement.closeOnCompletion();
-            preparedStatement.setObject(1, reiseid);
-            int exit_code = preparedStatement.executeUpdate();
-            System.out.println(exit_code);
+            int exit_code = 0;
+            try {
+                stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, reiseid);
+                exit_code = preparedStatement.executeUpdate();
+                System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
             // DELETE Reise
-            // TODO: Eine Buchung kann sowohl Reise als auch Flugticket sein
-            stringStatement = "DELETE FROM Reise WHERE Buchung_ID = ?";
-            System.out.println(stringStatement);
-            preparedStatement = connection.prepareStatement(stringStatement);
-            preparedStatement.closeOnCompletion();
-            preparedStatement.setObject(1, reiseid);
-            exit_code = preparedStatement.executeUpdate();
-            System.out.println(exit_code);
+            try {
+                stringStatement = "DELETE FROM Reise WHERE Buchung_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, reiseid);
+                exit_code = preparedStatement.executeUpdate();
+                System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            // DELETE Flights of Ticket
+            try {
+                stringStatement = "DELETE FROM Flugticket_beinhaltet_Flug WHERE Flugticket_Buchung_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, reiseid);
+                exit_code = preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            // DELETE Ticket
+            try {
+                stringStatement = "DELETE FROM Flugticket WHERE Buchung_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, reiseid);
+                exit_code = preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            try {
+                stringStatement = "DELETE FROM Buchung WHERE ID = ?";
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, reiseid);
+                exit_code = preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+
+            }
+            connection.commit();
             connection.close();
-            return Response.status(Response.Status.NO_CONTENT).entity(exit_code).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         } catch (SQLException ex){
             ex.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
@@ -122,55 +193,67 @@ public class ReiseController {
                 return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
             }
             Connection connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+            int new_id;
             // Create Buchung
-            System.out.println("Buchung");
-            String stringStatement = "INSERT INTO Buchung(Preis, Reisebuero_Username) values(?,?);";
-            System.out.println(stringStatement);
-            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
-            preparedStatement.closeOnCompletion();
-            preparedStatement.setObject(1, preis);
-            preparedStatement.setObject(2, securityContext.getUserPrincipal().getName());
-            int exit_code = preparedStatement.executeUpdate();
-            System.out.println(exit_code);
-            // Get Buchung ID
-            System.out.println("Buchung ID");
-            stringStatement = "SELECT ID FROM Buchung WHERE Preis = ? AND Reisebuero_Username = ? ORDER BY rowid DESC LIMIT 1;";
-            System.out.println(stringStatement);
-            preparedStatement = connection.prepareStatement(stringStatement);
-            preparedStatement.closeOnCompletion();
-            preparedStatement.setObject(1, preis);
-            preparedStatement.setObject(2, securityContext.getUserPrincipal().getName());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            Object buchung_id = resultSet.getObject(1);
-            System.out.println(exit_code);
-            resultSet.close();
+            String stringStatement = null;
+            PreparedStatement preparedStatement = null;
+            int exit_code = 0;
+            try {
+                stringStatement = "INSERT INTO Buchung(Preis, Reisebuero_Username) values(?,?);";
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, preis);
+                preparedStatement.setObject(2, securityContext.getUserPrincipal().getName());
+                exit_code = preparedStatement.executeUpdate();
+                new_id = preparedStatement.getGeneratedKeys().getInt(1);
+                System.out.println("GENERATED_KEYSET = "+preparedStatement.getGeneratedKeys().getInt(1));
+                //System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
             // Create Reise
-            System.out.println("Insert Reise");
-            stringStatement = "INSERT INTO Reise(Buchung_ID,Startzeitpunkt,Dauer,Titel) values(?,?,?,?);";
-            System.out.println(stringStatement);
-            preparedStatement = connection.prepareStatement(stringStatement);
-            preparedStatement.closeOnCompletion();
-            preparedStatement.setObject(1, buchung_id);
-            preparedStatement.setObject(2, startzeitpunkt);
-            preparedStatement.setObject(3, dauer);
-            preparedStatement.setObject(4, titel);
-            exit_code = preparedStatement.executeUpdate();
-            System.out.println(exit_code);
+            try {
+                //System.out.println("Insert Reise");
+                stringStatement = "INSERT INTO Reise(Buchung_ID,Startzeitpunkt,Dauer,Titel) values(?,?,?,?);";
+                //System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, new_id);
+                preparedStatement.setObject(2, startzeitpunkt);
+                preparedStatement.setObject(3, dauer);
+                preparedStatement.setObject(4, titel);
+                exit_code = preparedStatement.executeUpdate();
+                //System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
             // Add Reise -> Unterkunft
-            System.out.println("Insert Reise -> Unterkunft");
-            stringStatement = "INSERT INTO Reise_belegt_Unterkunft(Reise_Buchung_ID,Unterkunft_ID) values(?,?);";
-            System.out.println(stringStatement);
-            preparedStatement = connection.prepareStatement(stringStatement);
-            preparedStatement.closeOnCompletion();
-            preparedStatement.setObject(1, buchung_id);
-            preparedStatement.setObject(2, unterkunftid);
-            exit_code = preparedStatement.executeUpdate();
-            System.out.println(exit_code);
+            try {
+                //System.out.println("Insert Reise -> Unterkunft");
+                stringStatement = "INSERT INTO Reise_belegt_Unterkunft(Reise_Buchung_ID,Unterkunft_ID) values(?,?);";
+                //System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, new_id);
+                preparedStatement.setObject(2, unterkunftid);
+                exit_code = preparedStatement.executeUpdate();
+                //System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            connection.commit();
             connection.close();
-            return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen?titel="+titel).build()).build();
+            return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+new_id).build()).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
@@ -210,6 +293,7 @@ public class ReiseController {
     }
 
 
+    /** Multi tag POST
     @POST
     @RolesAllowed({"OFFICE"})
     @Path("/reisen/{reiseid}/tags")
@@ -242,6 +326,45 @@ public class ReiseController {
                 }
                 connection.close();
                 return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+reiseid+"/tags").build()).build();
+            } else {
+                connection.close();
+                return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung").build();
+            }
+        } catch (SQLException ex){
+            ex.printStackTrace();
+            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+        }
+    }**/
+
+    @POST
+    @RolesAllowed({"OFFICE"})
+    @Path("/reisen/{reiseid}/tags")
+    public Response insert_reise_tags(@PathParam("reiseid") Integer reiseid, @FormDataParam("tag") String tag) {
+        try{
+            if (reiseid == null || tag == null){
+                return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
+            }
+            Connection connection = dataSource.getConnection();
+            String stringStatement = "SELECT * FROM Buchung WHERE ID = ? AND Reisebuero_Username = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement.closeOnCompletion();
+            preparedStatement.setObject(1,reiseid);
+            preparedStatement.setObject(2,securityContext.getUserPrincipal().getName());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                resultSet.close();
+                // Add Tag
+                String stringInsertStatement = "INSERT INTO Reise_hat_Tag(Reise_ID,Tag_Bezeichnung) values(?,?);";
+                //System.out.println(stringInsertStatement);
+                PreparedStatement preparedInsertStatement = connection.prepareStatement(stringInsertStatement);
+                preparedInsertStatement.setObject(1,reiseid);
+                preparedInsertStatement.setObject(2,tag);
+                preparedInsertStatement.closeOnCompletion();
+                int exit_insert_code = preparedInsertStatement.executeUpdate();
+                int new_id = preparedInsertStatement.getGeneratedKeys().getInt(1);
+                preparedInsertStatement.close();
+                connection.close();
+                return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+reiseid+"/tags/"+new_id).build()).build();
             } else {
                 connection.close();
                 return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung").build();
