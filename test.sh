@@ -75,5 +75,44 @@ echo ""
 
 echo "AUTH DELETE /flugtickets/"
 curl -X DELETE "http://localhost:8080/flugtickets/5" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
 curl -X DELETE "http://localhost:8080/flugtickets/5" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
 
+echo "AUTH GET flugtickets/X/fluege"
+curl -X GET "http://localhost:8080/flugtickets/3/fluege" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+curl -X GET "http://localhost:8080/flugtickets/99999/fluege" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+
+echo "AUTH POST flugtickets/X/fluege"
+curl -X POST "http://localhost:8080/flugtickets/3/fluege" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "flugid=2"
+echo ""
+
+echo "AUTH DELETE flugtickets/X/fluege"
+curl -X DELETE "http://localhost:8080/reisen/27" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+
+echo "AUTH GET /reisen"
+curl -X GET "http://localhost:8080/reisen?titel=a" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+curl -X GET "http://localhost:8080/reisen?titel=a&startdatum=2019-05-12" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+curl -X GET "http://localhost:8080/reisen?titel=a&startdatum=2019-05-12&tags=FoodANDFun" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+
+echo "AUTH POST /reisen"
+curl -X POST "http://localhost:8080/reisen" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "startzeitpunkt=2020-05-05 10:10:10" -F "dauer=100" -F "titel=Titell" -F "unterkunftid=1" -F "preis=100"
+echo ""
+
+echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
+curl -X GET "http://localhost:8080/reisen/1/unterkuenfte" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""
+
+echo "AUTH POST /reisen/{reiseid}/unterkuenfte"
+curl -X POST "http://localhost:8080/reisen/4/tags" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "tag=FunANDFood"
+echo ""
+
+echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
+curl -X GET "http://localhost:8080/reisen/4/tags" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""

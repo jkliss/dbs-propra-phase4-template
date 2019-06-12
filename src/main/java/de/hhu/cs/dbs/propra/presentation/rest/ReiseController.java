@@ -1,5 +1,6 @@
 package de.hhu.cs.dbs.propra.presentation.rest;
 
+import com.sun.xml.bind.v2.TODO;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.annotation.security.RolesAllowed;
@@ -37,7 +38,7 @@ public class ReiseController {
         try{
             Connection connection = dataSource.getConnection();
             if (reiseid == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
             }
             // DELETE Unterkunft of Reise
             String stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
@@ -48,6 +49,7 @@ public class ReiseController {
             int exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             // DELETE Reise
+            // TODO: Eine Buchung kann sowohl Reise als auch Flugticket sein
             stringStatement = "DELETE FROM Reise WHERE Buchung_ID = ?";
             System.out.println(stringStatement);
             preparedStatement = connection.prepareStatement(stringStatement);
@@ -56,10 +58,10 @@ public class ReiseController {
             exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
-            return Response.status(Response.Status.OK).entity(exit_code).build();
+            return Response.status(Response.Status.NO_CONTENT).entity(exit_code).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 

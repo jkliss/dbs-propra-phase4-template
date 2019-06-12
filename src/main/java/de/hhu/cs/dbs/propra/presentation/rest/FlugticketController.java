@@ -125,7 +125,7 @@ public class FlugticketController {
         try{
             Connection connection = dataSource.getConnection();
             if (flugticketid == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
             }
             // DELETE Flights of Ticket
             String stringStatement = "DELETE FROM Flugticket_beinhaltet_Flug WHERE Flugticket_Buchung_ID = ?";
@@ -145,12 +145,12 @@ public class FlugticketController {
             System.out.println(exit_code);
             connection.close();
             if (exit_code == 0){
-                return Response.status(Response.Status.NO_CONTENT).entity("Kein Flugticket mit ID "+flugticketid).build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Kein Flugticket mit ID "+flugticketid).build();
             }
-            return Response.status(Response.Status.OK).entity("Erfolgreich gelöscht.").build();
+            return Response.status(Response.Status.NO_CONTENT).entity("Erfolgreich gelöscht.").build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
