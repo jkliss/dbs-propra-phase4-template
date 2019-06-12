@@ -34,7 +34,7 @@ public class ReiseController {
     @Path("/reisen/{reiseid}")
     @RolesAllowed({"OFFICE"})
     @DELETE
-    public Response delete_reise(@PathParam("reiseid") String reiseid) {
+    public Response delete_reise(@PathParam("reiseid") Integer reiseid) {
         try{
             Connection connection = dataSource.getConnection();
             if (reiseid == null){
@@ -116,7 +116,7 @@ public class ReiseController {
     @POST
     @RolesAllowed({"OFFICE"})
     @Path("/reisen")
-    public Response insert_reise(@FormDataParam("startzeitpunkt") String startzeitpunkt, @FormDataParam("dauer") String dauer, @FormDataParam("titel") String titel, @FormDataParam("unterkunftid") String unterkunftid, @FormDataParam("preis") String preis) {
+    public Response insert_reise(@FormDataParam("startzeitpunkt") String startzeitpunkt, @FormDataParam("dauer") Integer dauer, @FormDataParam("titel") String titel, @FormDataParam("unterkunftid") Integer unterkunftid, @FormDataParam("preis") Integer preis) {
         try{
             if (startzeitpunkt == null || dauer == null || titel == null || unterkunftid == null || preis == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
@@ -177,7 +177,7 @@ public class ReiseController {
     @GET
     @RolesAllowed({"OFFICE"})
     @Path("/reisen/{reiseid}/unterkuenfte")
-    public Response list_own_flight_on_ticket(@PathParam("reiseid") String reiseid){
+    public Response list_own_flight_on_ticket(@PathParam("reiseid") Integer reiseid){
         try{
             if (reiseid == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();
@@ -213,7 +213,7 @@ public class ReiseController {
     @POST
     @RolesAllowed({"OFFICE"})
     @Path("/reisen/{reiseid}/tags")
-    public Response insert_reise_tags(@PathParam("reiseid") String reiseid, @FormDataParam("tag") String tag) {
+    public Response insert_reise_tags(@PathParam("reiseid") Integer reiseid, @FormDataParam("tag") String tag) {
         try{
             if (reiseid == null || tag == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
@@ -255,7 +255,7 @@ public class ReiseController {
     @GET
     @RolesAllowed({"OFFICE"})
     @Path("/reisen/{reiseid}/tags")
-    public Response list_tags_von_reise(@PathParam("reiseid") String reiseid){
+    public Response list_tags_von_reise(@PathParam("reiseid") Integer reiseid){
         try{
             if (reiseid == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();

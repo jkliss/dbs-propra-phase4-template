@@ -58,7 +58,7 @@ public class ReisebueroController {
     }
 
     @POST
-    public Response insert_reisebuero(@FormDataParam("username") String username, @FormDataParam("email")  String email , @FormDataParam("passwort")  String password, @FormDataParam("adresseid") String addresseid) {
+    public Response insert_reisebuero(@FormDataParam("username") String username, @FormDataParam("email")  String email , @FormDataParam("passwort")  String password, @FormDataParam("adresseid") Integer addresseid) {
         System.out.println("Start!");
         try{
             Connection connection = dataSource.getConnection();

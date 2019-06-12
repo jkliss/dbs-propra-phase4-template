@@ -68,7 +68,7 @@ public class FlugticketController {
     @POST
     @RolesAllowed({"OFFICE"})
     @Path("/flugtickets")
-    public Response insert_flugticket(@FormDataParam("vorname") String vorname, @FormDataParam("nachname")  String nachname , @FormDataParam("geschlecht")  String geschlecht, @FormDataParam("gepaeck") String gepaeck, @FormDataParam("extragepaeck") String extragepaeck, @FormDataParam("flugid") String flugid, @FormDataParam("preis") String preis) {
+    public Response insert_flugticket(@FormDataParam("vorname") String vorname, @FormDataParam("nachname")  String nachname , @FormDataParam("geschlecht")  String geschlecht, @FormDataParam("gepaeck") Boolean gepaeck, @FormDataParam("extragepaeck") Boolean extragepaeck, @FormDataParam("flugid") Integer flugid, @FormDataParam("preis") Integer preis) {
         try{
             Connection connection = dataSource.getConnection();
             if (vorname == null || nachname == null || preis == null || flugid == null || geschlecht == null || gepaeck == null || extragepaeck == null){
@@ -106,8 +106,8 @@ public class FlugticketController {
             preparedStatement.setObject(2, vorname);
             preparedStatement.setObject(3, nachname);
             preparedStatement.setObject(4, geschlecht);
-            preparedStatement.setBoolean(5, Boolean.getBoolean(gepaeck));
-            preparedStatement.setBoolean(6, Boolean.getBoolean(extragepaeck));
+            preparedStatement.setBoolean(5, gepaeck);
+            preparedStatement.setBoolean(6, extragepaeck);
             exit_code = preparedStatement.executeUpdate();
             System.out.println(exit_code);
             connection.close();
@@ -121,7 +121,7 @@ public class FlugticketController {
     @Path("/flugtickets/{flugticketid}")
     @RolesAllowed({"OFFICE"})
     @DELETE // GET http://localhost:8080/foo/xyz
-    public Response delete_flight_ticket(@PathParam("flugticketid") String flugticketid) {
+    public Response delete_flight_ticket(@PathParam("flugticketid") Integer flugticketid) {
         try{
             Connection connection = dataSource.getConnection();
             if (flugticketid == null){
@@ -157,7 +157,7 @@ public class FlugticketController {
     @GET
     @RolesAllowed({"OFFICE"})
     @Path("/flugtickets/{flugticketid}/fluege")
-    public Response list_own_flight_on_ticket(@PathParam("flugticketid") String flugticketid){
+    public Response list_own_flight_on_ticket(@PathParam("flugticketid") Integer flugticketid){
         try{
             if (flugticketid == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
@@ -188,7 +188,7 @@ public class FlugticketController {
     @POST
     @RolesAllowed({"OFFICE"})
     @Path("/flugtickets/{flugticketid}/fluege")
-    public Response insert_flugticket(@PathParam("flugticketid") String flugticketid, @FormDataParam("flugid") String flugid) {
+    public Response insert_flugticket(@PathParam("flugticketid") Integer flugticketid, @FormDataParam("flugid") Integer flugid) {
         try{
             if (flugticketid == null){
                 return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();

@@ -24,7 +24,7 @@ public class UnterkunftController {
     private UriInfo uriInfo;
 
     @GET // GET http://localhost:8080
-    public Response list_unterkunft(@QueryParam("bezeichnung") String bezeichnung,@QueryParam("sterne") String sterne, @QueryParam("top") String top) {
+    public Response list_unterkunft(@QueryParam("bezeichnung") String bezeichnung,@QueryParam("sterne") Integer sterne, @QueryParam("top") Integer top) {
         try{
             Connection connection = dataSource.getConnection();
             String stringStatement = "SELECT * From Unterkunft";

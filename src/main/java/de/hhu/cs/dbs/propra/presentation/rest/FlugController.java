@@ -26,7 +26,7 @@ public class FlugController {
     private UriInfo uriInfo;
 
     @GET // GET http://localhost:8080
-    public Response list_fluege(@QueryParam("startzeitpunkt") String startzeitpunkt,@QueryParam("startflughafen") String startflughafen,@QueryParam("zielflughafen") String zielflughafen,@QueryParam("flugzeugid") String flugzeugid) {
+    public Response list_fluege(@QueryParam("startzeitpunkt") String startzeitpunkt,@QueryParam("startflughafen") String startflughafen,@QueryParam("zielflughafen") String zielflughafen,@QueryParam("flugzeugid") Integer flugzeugid) {
         try{
             Connection connection = dataSource.getConnection();
             String stringStatement = "SELECT f.*,fdf1.Flughafen_Bezeichnung,fdf2.Flughafen_Bezeichnung FROM Flug f, Flug_durchgefuehrt_Flughafen fdf1, Flug_durchgefuehrt_Flughafen fdf2 WHERE f.ID = fdf1.Flug_ID AND fdf2.Zielflughafen = true AND f.ID = fdf1.Flug_ID AND fdf1.Zielflughafen = false";

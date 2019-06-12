@@ -24,7 +24,7 @@ public class FlugzeugController {
     private UriInfo uriInfo;
 
     @GET // GET http://localhost:8080
-    public Response list_flugzeuge(@QueryParam("flugzeugid") String flugzeugid,@QueryParam("modell") String modell, @QueryParam("baujahr") String baujahr,@QueryParam("passagieranzahl") String passagieranzahl, @QueryParam("crewanzahl") String crewanzahl)  {
+    public Response list_flugzeuge(@QueryParam("flugzeugid") Integer flugzeugid,@QueryParam("modell") String modell, @QueryParam("baujahr") Integer baujahr,@QueryParam("passagieranzahl") Integer passagieranzahl, @QueryParam("crewanzahl") Integer crewanzahl)  {
         try{
             Connection connection = dataSource.getConnection();
             String stringStatement = "SELECT * From Flugzeug";
