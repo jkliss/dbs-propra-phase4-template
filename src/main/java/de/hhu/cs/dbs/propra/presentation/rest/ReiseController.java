@@ -367,7 +367,7 @@ public class ReiseController {
                 return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+reiseid+"/tags/"+new_id).build()).build();
             } else {
                 connection.close();
-                return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung").build();
+                return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung oder keine Reise").build();
             }
         } catch (SQLException ex){
             ex.printStackTrace();

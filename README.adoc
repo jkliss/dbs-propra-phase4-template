@@ -26,4 +26,7 @@ Die Datenbank muss in ```data``` liegen und den Namen ```database.db``` besitzen
 
 ## Kritische Entscheidungen
 
-...
+Bei DELETE Reise/Flugticket werden auch die möglicherweise zugehörigen Flugticket/Reise gelöscht sodass die gesamte Buchung gelöscht werden kann.
+
+Die Anfrage zu POST bei Tags kann nur jeweils eine Location im HTTP Header zurückgeben und ist auch in der API nur singular beschrieben, deshalb wird nur jeweils ein Tag hinzugefügt. Eine Variante mit mehreren Tags ist auskommentiert im Code vorhanden.
+
