@@ -142,7 +142,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -236,7 +236,7 @@ public class FlugticketController {
     public Response list_own_flight_on_ticket(@PathParam("flugticketid") Integer flugticketid){
         try{
             if (flugticketid == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
             }
             Connection connection = dataSource.getConnection();
             String stringStatement;
@@ -250,7 +250,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -285,7 +285,7 @@ public class FlugticketController {
     public Response insert_flugticket(@PathParam("flugticketid") Integer flugticketid, @FormDataParam("flugid") Integer flugid) {
         try{
             if (flugticketid == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Keine Flugticket ID").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
             }
             Connection connection = dataSource.getConnection();
             String stringStatement;
@@ -299,7 +299,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

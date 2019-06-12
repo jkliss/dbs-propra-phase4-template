@@ -48,7 +48,7 @@ public class ReiseController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, reiseid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -180,7 +180,7 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
@@ -207,7 +207,7 @@ public class ReiseController {
                 preparedStatement.setObject(2, securityContext.getUserPrincipal().getName());
                 exit_code = preparedStatement.executeUpdate();
                 new_id = preparedStatement.getGeneratedKeys().getInt(1);
-                System.out.println("GENERATED_KEYSET = "+preparedStatement.getGeneratedKeys().getInt(1));
+                //System.out.println("GENERATED_KEYSET = "+preparedStatement.getGeneratedKeys().getInt(1));
                 //System.out.println(exit_code);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -263,7 +263,7 @@ public class ReiseController {
     public Response list_own_flight_on_ticket(@PathParam("reiseid") Integer reiseid){
         try{
             if (reiseid == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Keine Reise ID").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Reise ID").build();
             }
             String stringStatement = null;
             PreparedStatement preparedStatement = null;
@@ -277,7 +277,7 @@ public class ReiseController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, reiseid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -385,7 +385,7 @@ public class ReiseController {
                 return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+reiseid+"/tags/"+new_id).build()).build();
             } else {
                 connection.close();
-                return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung oder keine Reise").build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht die eigene Buchung oder keine Reise").build();
             }
         } catch (SQLException ex){
             ex.printStackTrace();
@@ -413,7 +413,7 @@ public class ReiseController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, reiseid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
