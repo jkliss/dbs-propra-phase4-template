@@ -30,3 +30,4 @@ Bei DELETE Reise/Flugticket werden auch die möglicherweise zugehörigen Flugtic
 
 Die Anfrage zu POST bei Tags kann nur jeweils eine Location im HTTP Header zurückgeben und ist auch in der API nur singular beschrieben, deshalb wird nur jeweils ein Tag hinzugefügt. Eine Variante mit mehreren Tags ist auskommentiert im Code vorhanden.
 
+Wie in der API beschrieben sind die Tags in /reisen?tags=xANDyANDz durch AND getrennt. Regex ist per default in Java case sensitive also sind begriffe wie Strand nicht betroffen.
