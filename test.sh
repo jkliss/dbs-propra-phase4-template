@@ -56,16 +56,6 @@ echo ""
 curl -X GET "http://localhost:8080/flugtickets" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 
-echo "AUTH GET /flugtickets"
-curl -X GET "http://localhost:8080/flugtickets?vorname=f&nachname=g" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
-echo ""
-curl -X GET "http://localhost:8080/flugtickets?vorname=f" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
-echo ""
-curl -X GET "http://localhost:8080/flugtickets?nachname=g" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
-echo ""
-curl -X GET "http://localhost:8080/flugtickets" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
-echo ""
-
 echo "AUTH POST /flugtickets/"
 RAN=$RANDOM
 curl -X POST "http://localhost:8080/flugtickets" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "vorname=Obo$RAN" -F "nachname=Kolo$RAN" -F "geschlecht=w" -F "gepaeck=true" -F "extragepaeck=false" -F "flugid=3" -F "preis=100"
@@ -80,17 +70,13 @@ curl -X DELETE "http://localhost:8080/flugtickets/5" -H  "accept: */*" -H  "Auth
 echo ""
 
 echo "AUTH GET flugtickets/X/fluege"
-curl -X GET "http://localhost:8080/flugtickets/3/fluege" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+curl -X GET "http://localhost:8080/flugtickets/4/fluege" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 curl -X GET "http://localhost:8080/flugtickets/99999/fluege" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 
 echo "AUTH POST flugtickets/X/fluege"
-curl -X POST "http://localhost:8080/flugtickets/3/fluege" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "flugid=2"
-echo ""
-
-echo "AUTH DELETE flugtickets/X/fluege"
-curl -X DELETE "http://localhost:8080/reisen/27" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+curl -X POST "http://localhost:8080/flugtickets/7/fluege" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "flugid=9"
 echo ""
 
 echo "AUTH DELETE reisen/reiseid"
@@ -124,6 +110,5 @@ echo ""
 echo "AUTH POST /reisen​/{reiseid}​/tags"
 curl -X POST "http://localhost:8080/reisen/4/tags" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "tag=Fun"
 echo ""
-
-echo "AUTH POST /reisen​/{reiseid}​/tags"
 curl -X GET "http://localhost:8080/reisen/51/tags" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
+echo ""

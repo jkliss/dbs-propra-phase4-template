@@ -39,6 +39,9 @@ public class ReiseController {
             String stringStatement = null;
             PreparedStatement preparedStatement = null;
             Connection connection = dataSource.getConnection();
+            if (reiseid == null){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Reise ID").build();
+            }
             // CHECK REISEBUERO AND REISE Vorhanden
             try {
                 stringStatement = "SELECT b.ID FROM Buchung b, Reise r WHERE b.Reisebuero_Username = ? AND b.ID = ? AND r.Buchung_ID = b.ID;";
@@ -56,14 +59,25 @@ public class ReiseController {
                 return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             }
             connection.setAutoCommit(false);
-            if (reiseid == null){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
-            }
-
             // DELETE Unterkunft of Reise
             int exit_code = 0;
             try {
                 stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, reiseid);
+                exit_code = preparedStatement.executeUpdate();
+                System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            // DELETE Tags of Reise
+            exit_code = 0;
+            try {
+                stringStatement = "DELETE FROM Reise_hat_Tag WHERE Reise_ID = ?";
                 System.out.println(stringStatement);
                 preparedStatement = connection.prepareStatement(stringStatement);
                 preparedStatement.closeOnCompletion();

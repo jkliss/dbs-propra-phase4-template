@@ -133,6 +133,9 @@ public class FlugticketController {
             String stringStatement = null;
             PreparedStatement preparedStatement = null;
             Connection connection = dataSource.getConnection();
+            if (flugticketid == null){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
+            }
             // CHECK REISEBUERO AND REISE Vorhanden
             try {
                 stringStatement = "SELECT b.ID FROM Buchung b, Flugticket f WHERE b.Reisebuero_Username = ? AND b.ID = ? AND f.Buchung_ID = b.ID;";
@@ -142,7 +145,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Kein Flugticket mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -150,12 +153,38 @@ public class FlugticketController {
                 return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             }
             connection.setAutoCommit(false);
-            if (flugticketid == null){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Keine Flugticket ID").build();
-            }
 
             // DELETE Unterkunft of Reise
             int exit_code = 0;
+            try {
+                stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, flugticketid);
+                exit_code = preparedStatement.executeUpdate();
+                System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            // DELETE Tags of Reise
+            exit_code = 0;
+            try {
+                stringStatement = "DELETE FROM Reise_hat_Tag WHERE Reise_ID = ?";
+                System.out.println(stringStatement);
+                preparedStatement = connection.prepareStatement(stringStatement);
+                preparedStatement.closeOnCompletion();
+                preparedStatement.setObject(1, flugticketid);
+                exit_code = preparedStatement.executeUpdate();
+                System.out.println(exit_code);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+            // DELETE Unterkunft of Reise
             try {
                 stringStatement = "DELETE FROM Reise_belegt_Unterkunft WHERE Reise_Buchung_ID = ?";
                 System.out.println(stringStatement);
@@ -243,7 +272,7 @@ public class FlugticketController {
             PreparedStatement preparedStatement;
             // CHECK REISEBUERO AND TICKET Vorhanden
             try {
-                stringStatement = "SELECT Buchung_ID FROM Flugticket ft, Buchung b WHERE b.Reisebuero_Username = ? AND b.ID = ? AND f.Buchung_ID = b.ID;";
+                stringStatement = "SELECT Buchung_ID FROM Flugticket ft, Buchung b WHERE b.Reisebuero_Username = ? AND b.ID = ? AND ft.Buchung_ID = b.ID;";
                 System.out.println(stringStatement);
                 preparedStatement = connection.prepareStatement(stringStatement);
                 preparedStatement.closeOnCompletion();
@@ -292,7 +321,7 @@ public class FlugticketController {
             PreparedStatement preparedStatement;
             // CHECK REISEBUERO AND TICKET Vorhanden
             try {
-                stringStatement = "SELECT Buchung_ID FROM Flugticket ft, Buchung b WHERE b.Reisebuero_Username = ? AND b.ID = ? AND f.Buchung_ID = b.ID;";
+                stringStatement = "SELECT Buchung_ID FROM Flugticket ft, Buchung b WHERE b.Reisebuero_Username = ? AND b.ID = ? AND ft.Buchung_ID = b.ID;";
                 System.out.println(stringStatement);
                 preparedStatement = connection.prepareStatement(stringStatement);
                 preparedStatement.closeOnCompletion();
