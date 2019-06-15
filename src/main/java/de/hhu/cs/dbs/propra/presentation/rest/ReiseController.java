@@ -51,7 +51,7 @@ public class ReiseController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, reiseid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -204,7 +204,7 @@ public class ReiseController {
     public Response insert_reise(@FormDataParam("startzeitpunkt") String startzeitpunkt, @FormDataParam("dauer") Integer dauer, @FormDataParam("titel") String titel, @FormDataParam("unterkunftid") Integer unterkunftid, @FormDataParam("preis") Integer preis) {
         try{
             if (startzeitpunkt == null || dauer == null || titel == null || unterkunftid == null || preis == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Nicht alle Parameter gesetzt").build();
             }
             Connection connection = dataSource.getConnection();
             connection.setAutoCommit(false);
@@ -291,7 +291,7 @@ public class ReiseController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, reiseid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -320,7 +320,7 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
@@ -332,7 +332,7 @@ public class ReiseController {
     public Response insert_reise_tags(@PathParam("reiseid") Integer reiseid, @FormDataParam("tag") String tag) {
         try{
             if (reiseid == null || tag == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Nicht alle Parameter gesetzt").build();
             }
             Connection connection = dataSource.getConnection();
             String stringStatement = "SELECT * FROM Buchung WHERE ID = ? AND Reisebuero_Username = ?;";
@@ -364,7 +364,7 @@ public class ReiseController {
             }
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }**/
 
@@ -374,7 +374,7 @@ public class ReiseController {
     public Response insert_reise_tags(@PathParam("reiseid") Integer reiseid, @FormDataParam("tag") String tag) {
         try{
             if (reiseid == null || tag == null){
-                return Response.status(Response.Status.NO_CONTENT).entity("Nicht alle Parameter gesetzt").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Nicht alle Parameter gesetzt").build();
             }
             Connection connection = dataSource.getConnection();
             String stringStatement = "SELECT * FROM Buchung WHERE ID = ? AND Reisebuero_Username = ?;";
@@ -399,11 +399,11 @@ public class ReiseController {
                 return Response.created(UriBuilder.fromUri("http://localhost:8080/reisen/"+reiseid+"/tags/"+new_id).build()).build();
             } else {
                 connection.close();
-                return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht die eigene Buchung oder keine Reise").build();
+                return Response.status(Response.Status.FORBIDDEN).entity("Nicht die eigene Buchung oder keine Reise").build();
             }
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
@@ -427,7 +427,7 @@ public class ReiseController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, reiseid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Keine Reise mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -451,7 +451,7 @@ public class ReiseController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 }

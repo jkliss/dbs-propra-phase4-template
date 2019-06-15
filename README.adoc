@@ -26,8 +26,29 @@ Die Datenbank muss in ```data``` liegen und den Namen ```database.db``` besitzen
 
 ## Kritische Entscheidungen
 
-Bei DELETE Reise/Flugticket werden auch die möglicherweise zugehörigen Flugticket/Reise gelöscht sodass die gesamte Buchung gelöscht werden kann.
+Bei DELETE Reise/Flugticket werden auch die möglicherweise zugehörigen Flugticket/Reise gelöscht
+sodass die gesamte Buchung gelöscht werden kann.
 
-Die Anfrage zu POST bei Tags kann nur jeweils eine Location im HTTP Header zurückgeben und ist auch in der API nur singular beschrieben, deshalb wird nur jeweils ein Tag hinzugefügt. Eine Variante mit mehreren Tags ist auskommentiert im Code vorhanden.
+Die Anfrage zu POST bei Tags kann nur jeweils eine Location im HTTP Header zurückgeben und
+ist auch in der API nur singular beschrieben, deshalb wird nur jeweils ein Tag hinzugefügt.
+Eine Variante mit mehreren Tags ist zusätzlich auskommentiert im Code vorhanden.
 
-Wie in der API beschrieben sind die Tags in /reisen?tags=xANDyANDz durch AND getrennt. Regex ist per default in Java case sensitive also sind begriffe wie Strand nicht betroffen.
+Wie in der API beschrieben sind die Tags in /reisen?tags=xANDyANDz durch AND getrennt.
+Regex ist per default in Java case sensitive also sind begriffe wie Strand nicht betroffen.
+
+Bei GET reisen/{reiseid}/tags werden die Tag Bezeichnungen separat und nicht als Lise angegeben,
+da in der API vorgegeben ist, dass es sich um bezeichnung: string handeln soll. Ein Trennzeichen
+ist ebenfalls nicht gegeben.
+
+Aufgrund fehlender Definition werden bei Posts Locations wie folgt zurückgegeben:
+POST /reisebueros => http://localhost:8080/reisebueros/"Username"
+
+POST /flugtickets => http://localhost:8080/flugtickets/"Buchungs ID"
+
+POST /flugtickets​/{flugticketid}​/fluege => http://localhost:8080/flugtickets/"Flugticket ID"/fluege/"Flug ID"
+
+POST ​/reisen => http://localhost:8080/reisen/"Buchungs ID"
+
+POST ​/reisen​/{reiseid}​/tags => http://localhost:8080/reisen/"Reise ID"/tags/"Neue Reise_hat_Tag Row ID"
+Kommentar: Da der einzugügende Tag bereits in der Post Anfrage enthalten ist, erschien mir eine Ausgabe der
+neuen Row ID sinnvoller, da sonst nur bekannte Informationen zurückgegeben werden.

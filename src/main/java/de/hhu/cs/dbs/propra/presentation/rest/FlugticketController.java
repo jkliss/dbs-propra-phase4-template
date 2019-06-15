@@ -279,7 +279,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -328,7 +328,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt oder TicketNr nicht vorhanden").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
