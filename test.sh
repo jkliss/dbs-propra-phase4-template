@@ -40,12 +40,13 @@ echo "POST /reisebueros/"
 RAN=$RANDOM
 curl -X POST "http://localhost:8080/reisebueros" -H  "accept: */*" -H  "Content-Type: multipart/form-data" -F "username=test$RAN" -F "email=test$RAN@test.de" -F "passwort=password$RAN" -F "adresseid=1"
 echo ""
+curl -X GET "http://localhost:8080/reisebueros?username=test" -H  "accept: application/json;charset=UTF-8"
+echo ""
 curl -X POST "http://localhost:8080/reisebueros" -H  "accept: */*" -H  "Content-Type: multipart/form-data" -F "username=test$RAN" -F "email=test$RAN@test.de" -F "passwort=password$RAN" -F "adresseid=1"
 echo ""
 curl -X POST "http://localhost:8080/reisebueros" -H  "accept: */*" -H  "Content-Type: multipart/form-data" -F "username=test$RAN" -F "email=test$RAN@test.de" -F "adresseid=1"
 echo ""
-curl -X GET "http://localhost:8080/reisebueros?username=test" -H  "accept: application/json;charset=UTF-8"
-echo ""
+
 ##############################################################
 
 echo "AUTH GET /buchungen/"
@@ -117,16 +118,6 @@ echo ""
 
 echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
 curl -X GET "http://localhost:8080/reisen/27/unterkuenfte" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
-echo ""
-#
-
-echo "AUTH POST /reisen/{reiseid}/unterkuenfte"
-curl -X POST "http://localhost:8080/reisen/4/tags" -H  "accept: */*" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA==" -H  "Content-Type: multipart/form-data" -F "tag=FunANDFood"
-echo ""
-#
-
-echo "AUTH GET /reisen/{reiseid}/unterkuenfte"
-curl -X GET "http://localhost:8080/reisen/4/tags" -H  "accept: application/json;charset=UTF-8" -H  "Authorization: Basic cGV0ZXI6d29yc2Rmc2RmdA=="
 echo ""
 #
 

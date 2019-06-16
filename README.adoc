@@ -52,3 +52,7 @@ POST ​/reisen => http://localhost:8080/reisen/"Buchungs ID"
 POST ​/reisen​/{reiseid}​/tags => http://localhost:8080/reisen/"Reise ID"/tags/"Neue Reise_hat_Tag Row ID"
 Kommentar: Da der einzugügende Tag bereits in der Post Anfrage enthalten ist, erschien mir eine Ausgabe der
 neuen Row ID sinnvoller, da sonst nur bekannte Informationen zurückgegeben werden.
+
+Bei GET Anfragen mit Authentifizierung wird Forbidden zurückgegeben wenn kein Eintrag exisitert oder
+der Eintrag nicht vom Reisebüro erstellt wurde um zu verhindern, da auch nicht einsichtig sein sollte
+welche IDs verteilt sind.

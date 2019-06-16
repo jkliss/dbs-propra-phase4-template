@@ -61,7 +61,7 @@ public class FlugticketController {
             return Response.status(Response.Status.OK).entity(entities).build();
         } catch (SQLException ex){
             ex.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(ex.getErrorCode()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getErrorCode()).build();
         }
     }
 
@@ -145,7 +145,7 @@ public class FlugticketController {
                 preparedStatement.setObject(1, securityContext.getUserPrincipal().getName());
                 preparedStatement.setObject(2, flugticketid);
                 if(!preparedStatement.executeQuery().next()){
-                    return Response.status(Response.Status.UNAUTHORIZED).entity("Nicht von diesem Reisebuero durchgeführt/Kein Flugticket mit dieser ID angelegt").build();
+                    return Response.status(Response.Status.FORBIDDEN).entity("Nicht von diesem Reisebuero durchgeführt/Kein Flugticket mit dieser ID angelegt").build();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
